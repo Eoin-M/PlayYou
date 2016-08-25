@@ -1,0 +1,152 @@
+.dropdown-menu {
+	width: 100% !important;
+}
+
+.floating_action_button {
+	position: fixed;
+	bottom: 5%;
+	left: 5%;
+	color: lightcoral !important;
+	z-index: 9999;
+}
+
+.iconBackground {
+	background: #222222;
+    border-radius: 50%;
+    line-height: 60% !important;
+}
+
+.floating_action_button:hover {
+	color: green !important;
+}
+
+.no-overflow {
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.divTitles {
+	border-bottom: 2px solid white;
+	font-size: 1.25em;
+	margin-bottom: 10px;
+	cursor: pointer;
+}
+
+.songBorder {
+	border: 1px solid white;
+}
+
+.songSmallDets {
+	font-size: 0.85em;
+}
+
+.songPerson {
+	color: grey;
+	margin-left: 5px;
+}
+
+.songUp, .songUp:hover, .songUp:focus, .songUp:visited {
+	color: green !important;
+}
+
+.songAbst, .songAbst:hover, .songAbst:focus, .songAbst:visited {
+	color: darkgrey !important;
+}
+
+.songDown, .songDown:hover, .songDown:focus, .songDown:visited {
+	color: red !important;
+}
+
+.main {
+	cursor: default !important;
+}
+
+.defaultVote, .defaultVote:hover, .defaultVote:focus, .defaultVote:visited {
+	cursor: pointer;
+	color: inherit;
+}
+
+.songVoteGlow {
+	text-shadow: 0px 0px 4px rgba(255,255,0,0.5);
+}
+
+.inputRed {
+	border: 1px solid red;
+}
+
+.a {
+	color: inherit;
+}
+
+a:-webkit-any-link {
+	color: inherit;
+}
+
+.notSelected {
+	background-color: #6B6B1B;
+	cursor: pointer;
+}
+
+.Selected {
+	background-color: #255625;
+	cursor: pointer;
+}
+
+.duration {
+	//float: right;
+    margin-left: 73%;
+    font-size: 0.75em;
+}
+
+#seekbar {
+	width: 85%;
+}
+
+#seekbar .slider-selection {
+    //background: #A0A0A0;
+    background: lightblue;
+}
+
+#volume {
+	height: 80px;
+	//float: right;
+    margin-top: -40px;
+	margin-left: 30px;
+}
+
+#volume .slider-track-high {
+    background: lightgreen;
+}
+
+#volume .slider-handle {
+	width: 10px;
+	height: 10px;
+	margin-top: -5px;
+	margin-left: -2px;
+	background: green;
+}
+
+#volume .slider-handle:hover {
+	width: 15px;
+	height: 15px;
+	margin-top: -7px;
+	margin-left: -4px;
+}
+
+#volume .slider-track {
+	width: 6px;
+}
+
+.playerBlue {
+	color: #0A8ACA;
+}
+
+.btn-sm {
+	width: 20%;
+}
+
+.downloadBtns {
+	margin: 5px;
+}
