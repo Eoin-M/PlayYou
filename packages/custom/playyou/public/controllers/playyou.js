@@ -97,19 +97,8 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	
 	$scope.random = function(){
 		$scope.onRandom = !$scope.onRandom;
-		if($scope.songs.length < 40) return; //don't really know why I put this here. Only causes problems.
 		
 		if($scope.onRandom){
-			/*for(var i = 0; i < $scope.songs.length; i++){
-				var step = 0;
-				if(i != LinearPos){
-					randomPlaylist[i + step] = i;
-				}
-				else step = -1;
-			}
-			randomPlaylist = shuffle(randomPlaylist);
-			randomPlaylist[randomPlaylist.length] = LinearPos;
-			RandomPos = randomPlaylist.length - 1;*/
 			var randomPlaylist = [];
 			
 			var step = 0;

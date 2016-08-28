@@ -173,6 +173,7 @@ module.exports = function(passport) {
         if (user) {
           return done(err, user);
         }
+		return done(null, false, {message: 'No New Accounts Allowed'});
         user = new User({
           name: profile.displayName,
           email: profile.emails[0].value,
@@ -182,7 +183,7 @@ module.exports = function(passport) {
           google: profile._json,
           roles: ['authenticated']
         });
-		return done(null, false, {message: 'No New Accounts Allowed'});
+		
         user.save(function(err) {
           if (err) {
             console.log(err);

@@ -211,17 +211,17 @@ module.exports = function(Playyou, app, auth, database) {
 			if(song.votes.up.length >= Math.ceil((5-song.votes.abs.length)/2)){
 				song.status = true;
 				if(!song.loc){
-					downloadSong(song, res);					
-				} else {
-					console.log("Saving: " + song.status);
-					song.save(function(err){
-						if(err){
-							console.log(err);
-							return res.sendStatus(507);
-						}
-						return res.sendStatus(200);
-					});
-				}
+					downloadSong(song, res);
+				} //else {
+				console.log("Saving: " + song.status);
+				song.save(function(err){
+					if(err){
+						console.log(err);
+						return res.sendStatus(507);
+					}
+					return res.sendStatus(200);
+				});
+				//}
 			}
 			else {
 				song.status = false;
@@ -268,15 +268,16 @@ module.exports = function(Playyou, app, auth, database) {
 			song.save(function(err){
 				if(err){
 					console.log(err);
-					return res.sendStatus(507);
+					//return res.sendStatus(507);
 				}
-				return res.sendStatus(200);
+				else console.log("Download Loc Saved");
+				//return res.sendStatus(200);
 			});
 		});
 		 
 		YD.on("error", function(error) {
 			console.log("Error " + error);
-			return res.sendStatus(503);
+			//return res.sendStatus(503);
 		});
 		 
 		YD.on("progress", function(progress) {
@@ -364,7 +365,7 @@ module.exports = function(Playyou, app, auth, database) {
 	});
 	
 
-	var key = "AIzaSyDjmNPQnA4RqNyYoILp733Jl9MABKQGzXQ";
+	/*var key = "AIzaSyDjmNPQnA4RqNyYoILp733Jl9MABKQGzXQ";
 	var playlist = "PL-rRWrSIsaj2mRdD0J1_TOXa6Ln3Q1N0J";
 
 	var getJSON =require('get-json');
@@ -461,5 +462,5 @@ module.exports = function(Playyou, app, auth, database) {
 		YD.on("queueSize", function(size) {
 			console.log(size);
 		});
-	}
+	}*/
 };
