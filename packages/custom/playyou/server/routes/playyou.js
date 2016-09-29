@@ -175,7 +175,7 @@ module.exports = function(Playyou, app, auth, database) {
 			}
 			
 			return res.send({songs: songs});
-		});
+		}).sort({_id:1});
 	});
 	
 	app.post('/api/playyou/getSongsAfter', function(req, res){
@@ -205,7 +205,7 @@ module.exports = function(Playyou, app, auth, database) {
 			}
 			//console.log(songs);
 			return res.send({songs: songs});
-		}).skip(skip);
+		}).skip(skip).sort({_id:1});
 	});
 	
 	function orderSongs(a,b) {
