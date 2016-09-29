@@ -1,7 +1,7 @@
 <div class="" data-ng-controller="PlayyouController">
 	<a ng-show="loggedIn" data-toggle="modal" data-target="#newSongModal" class="floating_action_button" style="color:inherit; cursor: pointer"><i class="fa fa-plus-circle fa-4x iconBackground" /></a>
 	
-	<div class="row">
+	<div class="row" infinite-scroll="increaseLimit()" infinite-scroll-distance="0">
 		<!-- VOTING -->
 		<div class="col-lg-5 col-md-6 col-sm-12 col-xs-12" id="votable">
 			<div style="height: 140px; padding-left: 25px;" class="no-overflow">
@@ -17,17 +17,19 @@
 				</span>
 				<span><input id="volume" data-slider-id='volume' data-slider-tooltip-position="left" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="80" data-slider-orientation="vertical"/></span>
 			</div>
-			<div class="divTitles" data-toggle="collapse" data-target="#voteCollapse" ng-click="voteCollapsed=!voteCollapsed">Vote On Songs: <i ng-class="{'fa-compress':!voteCollapsed}" class="fa fa-expand" style="float: right" /></div>
+			<div class="divTitles" data-toggle="collapse" data-target="#voteCollapse" ng-click="voteCollapsed=!voteCollapsed">Vote On Songs: <span ng-hide="songsToVote()">{{votableSongs}}</span><i ng-class="{'fa-compress':!voteCollapsed}" class="fa fa-expand" style="float: right" /></div>
 			<div id="voteCollapse" class="collapse in">
-				<div ng-class="{songBorder:song.vote == null}" class="no-overflow well well-sm songContainer" ng-repeat="song in OGsongs | orderBy:['-vote', '-']" ng-show="!song.status">
-					<div style="float: right">
+				<div ng-repeat="song in OGsongs | filter:voteFilter | orderBy:['-vote', '-'] | limitTo:limit" ng-class="{songBorder:song.vote == null}" class="no-overflow well well-sm songContainer">
+					<div style="float: right;">
 						<div ng-class="{songUp:song.vote == 1}"><a ng-click="songVote(song, 1)" style="color:inherit; cursor:pointer"><i class="fa fa-arrow-up" /><span> {{song.upvotes}}</span></a></div>
 						<div ng-class="{songAbst:song.vote == 0}"><a ng-click="songVote(song, 0)" style="color:inherit; cursor:pointer"><i class="fa fa-arrows-h" /><span> {{song.absvotes}}</span></a></div>
 						<div ng-class="{songDown:song.vote == -1}"><a ng-click="songVote(song, -1)" style="color:inherit; cursor:pointer"><i class="fa fa-arrow-down" /><span> {{song.downvotes}}</span></a></div>
 					</div>
-					<span>{{song.title}}</span><br>
-					<div class="songSmallDets"><span>{{song.artist}}</span><span class="songPerson"> - <span class="songPerson">{{song.submitted_by}}</span></div>
-					<a ng-click="playSong(song)" style="color:inherit; cursor:pointer">{{song.link}}</a>
+					<div class="songDets">
+						<span>{{song.title}}</span><br>
+						<div class="songSmallDets"><span>{{song.artist}}</span><span class="songPerson"> - <span class="songPerson">{{song.submitted_by}}</span></div>
+						<a ng-click="playSong(song)" style="color:inherit; cursor:pointer;">{{song.link}}</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -41,16 +43,18 @@
 			</div>
 			<div class="divTitles" data-toggle="collapse" data-target="#alreadyCollapse" ng-click="alreadyCollapsed=!alreadyCollapsed">Already in the Playlist: <i ng-class="{'fa-compress':!alreadyCollapsed}" class="fa fa-expand" style="float: right" /></div>
 			<div id="alreadyCollapse" class="collapse in">
-				<div class="no-overflow well well-sm songContainer" ng-repeat="song in songs | orderBy: '-'" ng-show="song.status" ng-click="selectSong(song)" ng-class="{notSelected: (selecting && song.notSelected), Selected:(selecting && !song.notSelected)}">
-					<div style="float: right">
+				<div ng-repeat="song in songs | filter:{status:true} | orderBy:'-' | limitTo:limit" ng-class="{songBorder:(song.vote == null && song.upvotes != 11), notSelected: (selecting && song.notSelected), Selected:(selecting && !song.notSelected)}" class="no-overflow well well-sm songContainer" ng-show="song.status" ng-click="selectSong(song)">
+					<div style="float: right;">
 						<div ng-class="{songUp:song.vote == 1}"><a ng-click="songVote(song, 1)" ng-class="{'main songUp songVoteGlow':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrow-up" /><span> {{song.upvotes}}</span></a></div>
 						<div ng-class="{songAbst:song.vote == 0}"><a ng-click="songVote(song, 0)" ng-class="{'main songAbst':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrows-h" /><span> {{song.absvotes}}</span></a></div>
 						<div ng-class="{songDown:song.vote == -1}"><a ng-click="songVote(song, -1)" ng-class="{'main songDown':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrow-down" /><span> {{song.downvotes}}</span></a></div>
 					</div>
 					<a class="fa fa-3x fa-play-circle-o" ng-class="{'fa-pause-circle-o':(song.link == currSong.link && playing), 'fa-spin':song.link == currSong.link}" ng-click="playThis(song)" style="float: left; margin-right: 10px; text-decoration: none; cursor: pointer;"/>
-					<span>{{song.title}}</span><br>
-					<div class="songSmallDets"><span>{{song.artist}}</span><span class="songPerson"> - <span class="songPerson">{{song.submitted_by}}</span></div>
-					<a ng-click="playSong(song)" style="color:inherit; cursor:pointer; overflow:hidden">{{song.link}}</a>
+					<div class="songDets">
+						<span>{{song.title}}</span><br>
+						<div class="songSmallDets"><span>{{song.artist}}</span><span class="songPerson"> - <span class="songPerson">{{song.submitted_by}}</span></div>
+						<a ng-click="playSong(song)" style="color:inherit; cursor:pointer;">{{song.link}}</a>
+					</div>
 				</div>
 			</div>
 		</div>

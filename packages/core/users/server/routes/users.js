@@ -43,6 +43,7 @@ module.exports = function(MeanUser, app, auth, database, passport) {
           failureFlash: false
         }), function(req, res) {
           var payload = req.user;
+		  //console.dir(req.user);
           var escaped = JSON.stringify(payload);
           escaped = encodeURI(escaped);
           // We are sending the payload inside the token

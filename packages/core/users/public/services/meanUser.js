@@ -5,7 +5,7 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
 
     var self;
 
-    function escape(html) {
+    /*function escape(html) {
       return String(html)
         .replace(/&/g, '&amp;')
         .replace(/"/g, '&quot;')
@@ -16,7 +16,43 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
 
     function b64_to_utf8( str ) {
       return decodeURIComponent(escape(window.atob( str )));
-    }
+    }*/
+	
+	function url_base64_decode(str) {
+	  var output = str.replace(/-/g, '+').replace(/_/g, '/');
+	  switch (output.length % 4) {
+		case 0:
+		  break;
+		case 2:
+		  output += '==';
+		  break;
+		case 3:
+		  output += '=';
+		  break;
+		default:
+		  throw 'Illegal base64url string!';
+	  }
+	  var result = window.atob(output); //polifyll https://github.com/davidchambers/Base64.js
+	  try{
+		return decodeURIComponent(escape(result));
+	  } catch (err) {
+		return result;
+	  }
+	}
+	
+	function decodeToken(str){
+		str = str.split('.')[1];
+		var json = null, error = null;
+		  try {
+			json = url_base64_decode(str);
+			json = (JSON.parse(decodeURI(json)), undefined, 2);
+		  } catch (e) {
+			error = e;
+		console.log(e);
+		  }
+		console.log(json);
+		return json;
+	}
 
     /*function url_base64_decode(str) {
       var output = str.replace('-', '+').replace('_', '/');
@@ -83,8 +119,8 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
       var encodedUser, user, destination;
       if (angular.isDefined(response.token)) {
         localStorage.setItem('JWT', response.token);
-        encodedUser = decodeURI(b64_to_utf8(response.token.split('.')[1]));
-        user = JSON.parse(encodedUser); 
+        user = decodeToken(response.token.split('.')[1]);
+        //user = JSON.parse(encodedUser); 
       }
       destination = angular.isDefined(response.redirect) ? response.redirect : destination;
       $cookies.remove('redirect');

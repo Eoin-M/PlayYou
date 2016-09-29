@@ -38,6 +38,12 @@
 	border: 1px solid white;
 }
 
+.songDets {
+	overflow: hidden;
+    width: 80%;
+    text-overflow: ellipsis;
+}
+
 .songSmallDets {
 	font-size: 0.85em;
 }

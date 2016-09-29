@@ -29,6 +29,8 @@ Playyou.register(function(app, auth, database) {
   Playyou.aggregateAsset('js', 'socket.io-stream.js');
   Playyou.aggregateAsset('js', 'socket.io.js');
   Playyou.aggregateAsset('js', 'jquery.jplayer.min.js');*/
+  
+  Playyou.angularDependencies(['infinite-scroll']);
 
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above

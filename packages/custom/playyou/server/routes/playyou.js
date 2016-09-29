@@ -6,10 +6,11 @@ module.exports = function(Playyou, app, auth, database) {
 	var mongoose = require('mongoose');
 	var Song = mongoose.model('House'); //'Song' model for Hub peeps
 	var YoutubeMp3Downloader = require('youtube-mp3-downloader');
+	var ObjectId = require('mongodb').ObjectID;
 	/*var House = mongoose.model('Song');
 	
 	function moveSongs(){
-		var names = ["Sean Reilly", "Moya Vallely"];
+		var names = ["Labhrás"];
 		
 		House.find({}, function(err, songs){
 			for(var i = 0; i < songs.length; i++){
@@ -74,7 +75,7 @@ module.exports = function(Playyou, app, auth, database) {
 		{
 		   //return res.sendStatus(200);
 		}
-		console.log(req.user);
+		//console.log(req.user);
 		
 		var loc = req.query.loc;
 		console.log(loc);
@@ -112,26 +113,48 @@ module.exports = function(Playyou, app, auth, database) {
 		});
 	});
 	
+	function updateDB(){
+		Song.find({}, function(err, songs){
+			if(err){
+				console.log(err);
+				return; //res.sendStatus(510);
+			}
+			
+			for(var i = 0; i < songs.length; i++){
+				var song = songs[i];
+				if(song.votes.up.length >= 3 && checkVotes(song)){
+					song.status = true;
+					if(!song.loc){
+						downloadSong(song);
+					} //else {
+					console.log("Saving: " + song.status);
+					song.save(function(err){
+						if(err){
+							console.log(err);
+							return;// res.sendStatus(507);
+						}
+						return; //res.sendStatus(200);
+					});
+					//}
+				}
+				else {
+					song.status = false;
+					song.save(function(err){
+						if(err) {
+							console.log(err);
+							return; //res.sendStatus(507);
+						}
+						return; //res.sendStatus(200);
+					});
+				}
+			}
+			//console.log(songs);
+			return; //res.send({songs: songs});
+		});
+	}
+	//updateDB();
+	
 	app.get('/api/playyou/getSongs', function(req, res){
-		var songs = [];
-		//if(!req.user) return res.sendStatus(412);
-		
-		/*for(var i = 0; i < 20; i++){
-			var song = {};
-			song.title = 'Song ' + i + ' Title';
-			song.artist = 'Song ' + i + ' Artist';
-			song.person = 'Song ' + i + ' Person';
-			song.link = 'https://www.youtube.com/watch?v=hT_nvWreIhg'; //"Song " + i + " Link";
-			if(Math.random() < 0.5 )song.voted = true;
-			else song.voted = false;
-			song.upvotes = Math.floor(Math.random() * 10);
-			song.abst = Math.floor(Math.random() * 10);
-			song.downvotes = Math.floor(Math.random() * 10);
-			song.vote = Math.floor(Math.random() * 3) - 1;
-			if(Math.random() < 0.8 && !song.voted) song.vote = null; 
-			songs[songs.length] = song;
-		}
-		songs = orderSongs(songs);*/
 		Song.find({}, function(err, songs){
 			if(err){
 				console.log(err);
@@ -139,6 +162,38 @@ module.exports = function(Playyou, app, auth, database) {
 			}
 			
 			for(var i = 0; i < songs.length; i++){
+				//songs[songs.length-1]._id.str = songs[songs.length-1]._id.getTimestamp().getTime()/1000; //not overwriting object
+				if(req.user){
+					if(songs[i].votes.up.indexOf(req.user._id) > -1) songs[i].vote = 1;				
+					else if(songs[i].votes.down.indexOf(req.user._id) > -1) songs[i].vote = -1;
+					else if(songs[i].votes.abs.indexOf(req.user._id) > -1) songs[i].vote = 0;
+				}
+				songs[i].upvotes = songs[i].votes.up.length;
+				songs[i].downvotes = songs[i].votes.down.length;
+				songs[i].absvotes = songs[i].votes.abs.length;
+				//songs.sort(orderSongs);
+			}
+			
+			return res.send({songs: songs});
+		});
+	});
+	
+	app.post('/api/playyou/getSongsAfter', function(req, res){
+		var songs = [];
+		var skip = 0;
+		
+		if(req.body.after){
+			skip = req.body.after;
+		}
+		
+		Song.find({}, function(err, songs){
+			if(err){
+				console.log(err);
+				res.sendStatus(510);
+			}
+			
+			for(var i = 0; i < songs.length; i++){
+				//songs[songs.length-1]._id.str = songs[songs.length-1]._id.getTimestamp().getTime()/1000; //not overwriting object
 				if(req.user){
 					if(songs[i].votes.up.indexOf(req.user._id) > -1) songs[i].vote = 1;				
 					else if(songs[i].votes.down.indexOf(req.user._id) > -1) songs[i].vote = -1;
@@ -150,25 +205,25 @@ module.exports = function(Playyou, app, auth, database) {
 			}
 			//console.log(songs);
 			return res.send({songs: songs});
-		});
+		}).skip(skip);
 	});
 	
-	function orderSongs(songs){
-		var firstSongs = [];
-		var lastSongs = [];
-		for(var i = 0; i < songs.length; i++){
-			if(!songs[i].voted && songs[i].vote === null) firstSongs[firstSongs.length] = songs[i];
-			else lastSongs[lastSongs.length] = songs[i];
-		}
-		songs = firstSongs.concat(lastSongs);
-		return songs;
+	function orderSongs(a,b) {
+		if (a._id.getTimestamp() < b._id.getTimestamp()) return 1;
+		if (a._id.getTimestamp() > b._id.getTimestamp()) return -1;
+		console.log("No Change");
+		return 0;
+	}
+	
+	function checkVotes(song){
+		var ups = song.votes.up.length + song.votes.abs.length / 3;
+		var total = ups + song.votes.down.length;
+		
+		return (ups/total > 0.6);
 	}
 	
 	app.post('/api/playyou/vote', function(req, res){
 		if(!req.user) return res.sendStatus(412);
-		console.dir(req.body.oldVote);
-		console.dir(req.body.newVote);
-		console.dir(req.body.songLink);
 		
 		Song.findOne({'link': req.body.songLink }, function (err, song) {
 			if (err){
@@ -208,10 +263,10 @@ module.exports = function(Playyou, app, auth, database) {
 			//if(song.votes.up.length >= Math.ceil((11-song.votes.abs.length)/2)){
 			console.log("Up: " + song.votes.up.length);
 			console.log("Need: " + Math.ceil((5-song.votes.abs.length)/2));
-			if(song.votes.up.length >= Math.ceil((5-song.votes.abs.length)/2)){
+			if(song.votes.up.length >= 3 && checkVotes(song)){
 				song.status = true;
 				if(!song.loc){
-					downloadSong(song, res);
+					downloadSong(song);
 				} //else {
 				console.log("Saving: " + song.status);
 				song.save(function(err){
@@ -237,13 +292,12 @@ module.exports = function(Playyou, app, auth, database) {
 	});
 	
 	app.post('/api/playyou/addSong', function(req, res){
-
 		var song = new Song(req.body.song);
-		console.log(req.user);
 		if(req.user){
 			song.submitted_by = req.user.name;
 			song.votes.up.push(req.user._id);
 		} else {
+			return res.sendStatus(412);
 			song.submitted_by = req.body.name;
 			song.votes.up.push(req.body._id);
 		}
@@ -256,8 +310,9 @@ module.exports = function(Playyou, app, auth, database) {
 		});
 	});
 	
-	function downloadSong(song, res){
+	function downloadSong(song){
 		console.log("DL: " + song.link);
+		console.log("DL: " + song.title);
 		var YD = setUpYD();
 		YD.download(song.link);
 		

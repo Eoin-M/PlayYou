@@ -39,6 +39,7 @@ module.exports = function(passport) {
           return done(err);
         }
         if (!user) {
+			console.log("No User");
           return done(null, false, {
             message: 'Unknown user'
           });
@@ -48,6 +49,7 @@ module.exports = function(passport) {
             message: 'Invalid password'
           });
         }*/
+		console.log(user.email);
         return done(null, user);
       });
     }
@@ -165,6 +167,7 @@ module.exports = function(passport) {
       callbackURL: config.strategies.google.callbackURL
     },
     function(accessToken, refreshToken, profile, done) {
+		console.log("Login");
 		profile._json.accessToken = accessToken;
 		profile._json.refreshToken = refreshToken;
       User.findOne({
