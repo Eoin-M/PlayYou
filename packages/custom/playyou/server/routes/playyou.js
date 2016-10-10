@@ -154,6 +154,8 @@ module.exports = function(Playyou, app, auth, database) {
 	}
 	//updateDB();
 	
+	//$or:[{status: false}, {'votes.up': {$all: ['57154d7175c50ee71b6ce904', '57be3151bceb4c043b3f79bc']}}]
+	
 	app.get('/api/playyou/getSongs', function(req, res){
 		Song.find({}, function(err, songs){
 			if(err){
@@ -340,6 +342,28 @@ module.exports = function(Playyou, app, auth, database) {
 			//console.log(progress);
 		});
 	}
+	
+	app.post('/api/playyou/testDownload', function(req, res){
+		console.log(req.body);
+		if(req.body.link == undefined) return res.sendStatus(500);
+		var song = {
+			link: req.body.link
+		};
+		
+		var YD = setUpYD();
+		YD.download(req.body.link);
+		
+		YD.on("finished", function(data) {
+			console.log("Finished");
+			console.dir(data);
+			return res.sendStatus(200);
+		});
+		 
+		YD.on("error", function(error) {
+			console.log("Error " + error);
+			//return res.sendStatus(503);
+		});
+	});
 	
 	app.get('/api/playyou/download', function(req, res){
 		/*var getSize = require('get-folder-size');

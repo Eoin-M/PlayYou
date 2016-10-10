@@ -15,7 +15,7 @@
 					<a class="btn btn-default btn-sm" ng-click="skipNext()"><i class="fa fa-fast-forward">&nbsp;</i></a>
 					<a class="btn btn-default btn-sm" ng-click="random()"><i class="fa fa-random" ng-class="{playerBlue:onRandom}">&nbsp;</i></a>
 				</span>
-				<span><input id="volume" data-slider-id='volume' data-slider-tooltip-position="left" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="80" data-slider-orientation="vertical"/></span>
+				<span ng-mouseover="volumeScroll = true" ng-mouseleave="volumeScroll = false"><input id="volume" data-slider-id='volume' data-slider-tooltip-position="left" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="80" data-slider-orientation="vertical"/></span>
 			</div>
 			<div class="divTitles" data-toggle="collapse" data-target="#voteCollapse" ng-click="voteCollapsed=!voteCollapsed">Vote On Songs: <span ng-hide="songsToVote()">{{votableSongs}}</span><i ng-class="{'fa-compress':!voteCollapsed}" class="fa fa-expand" style="float: right" /></div>
 			<div id="voteCollapse" class="collapse in">

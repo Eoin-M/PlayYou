@@ -222,6 +222,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		}
 		else if(KeyEvent.which == 38){
 			KeyEvent.preventDefault();
+			volumePopIn();
 			var v = volume.slider('getValue');
 			v += 10;
 			if(v > 100) v = 100;
@@ -229,6 +230,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		}
 		else if(KeyEvent.which == 40){
 			KeyEvent.preventDefault();
+			volumePopIn();
 			var v = volume.slider('getValue');
 			v -= 10;
 			if(v < 0) v = 0;
@@ -240,6 +242,30 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		else if(KeyEvent.which == 66){
 			$scope.skipPrev();
 		}
+	}
+	
+	function volumePopIn() {		
+		$("#volume").children("div.tooltip-main").addClass('in');
+		setTimeout(function(){ $("#volume").children().removeClass('in'); }, 1000);
+	}
+	
+	var volumeScrollFN = function(e) {
+		console.log(e.wheelDelta);
+		
+		if($scope.volumeScroll) {
+			e.preventDefault();
+			var v = volume.slider('getValue');
+			v += e.wheelDelta / 120;
+			if(v > 100) v = 100;
+			else if(v < 0) v = 0;
+			changeVolume(v);
+		}
+	};
+
+	if ("onmousewheel" in document) {
+		document.onmousewheel = volumeScrollFN;
+	} else {
+		document.addEventListener('DOMMouseScroll', volumeScrollFN, false);
 	}
 
 	function changeVolume(v){
