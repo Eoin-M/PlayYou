@@ -255,7 +255,8 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		if($scope.volumeScroll) {
 			e.preventDefault();
 			var v = volume.slider('getValue');
-			v += e.wheelDelta / 120;
+			if(e.wheelDelta > 0) v += Math.ceil(e.wheelDelta / 120);
+			else v += Math.floor(e.wheelDelta / 120);
 			if(v > 100) v = 100;
 			else if(v < 0) v = 0;
 			changeVolume(v);
