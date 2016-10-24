@@ -63,7 +63,7 @@ module.exports = function (grunt) {
     },
     watch: {
       options: {
-        livereload: true
+        livereload: false
       },
       files: [
         'Gruntfile.js',

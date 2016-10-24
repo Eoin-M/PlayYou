@@ -26,7 +26,31 @@ function getPackage(name, callback) {
   });
 }
 
+function loadPackageJson(path, callback) {
+  fs.readFile(path, function(err, data) {
+    if (err) return callback(err);
 
+    try {
+      var pkg = JSON.parse(data.toString());
+      pkg.meanVersion = pkg.mean || pkg.version;
+      callback(null, pkg);
+    } catch (err) {
+      return callback(err);
+    }
+  });
+}
+
+function packagesMeanJson(source) {
+  // Load mean.json
+  loadPackageJson(path.join(source, 'mean.json'), function(err, data) {
+    if (err || !data) return;
+
+    for (var dep in data.dependencies) {
+      shell.cd(process.cwd());
+      install(dep + '@' + data.dependencies[dep]);
+    }
+  });
+}
 
 function install(module, options) {
   options = options || {};
@@ -113,36 +137,6 @@ function install(module, options) {
     });
   });
 }
-
-function packagesMeanJson(source) {
-  // Load mean.json
-  loadPackageJson(path.join(source, 'mean.json'), function(err, data) {
-    if (err || !data) return;
-
-    for (var dep in data.dependencies) {
-      shell.cd(process.cwd());
-      install(dep + '@' + data.dependencies[dep]);
-    }
-  });
-}
-
-
-
-
-function loadPackageJson(path, callback) {
-  fs.readFile(path, function(err, data) {
-    if (err) return callback(err);
-
-    try {
-      var pkg = JSON.parse(data.toString());
-      pkg.meanVersion = pkg.mean || pkg.version;
-      callback(null, pkg);
-    } catch (err) {
-      return callback(err);
-    }
-  });
-}
-
 
 function packagesNpmInstall(source) {
   var packages = path.join(process.cwd(), source);

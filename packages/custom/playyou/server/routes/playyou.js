@@ -10,7 +10,7 @@ module.exports = function(Playyou, app, auth, database) {
 	/*var House = mongoose.model('Song');
 	
 	function moveSongs(){
-		var names = ["Labhrás"];
+		var names = ['Labhrás'];
 		
 		House.find({}, function(err, songs){
 			for(var i = 0; i < songs.length; i++){
@@ -32,11 +32,11 @@ module.exports = function(Playyou, app, auth, database) {
 	
 	function setUpYD(){
 		var YD = new YoutubeMp3Downloader({
-			"ffmpegPath": "./ffmpeg",        			// Where is the FFmpeg binary located?
-			"outputPath": "./mp3",    			// Where should the downloaded and encoded files be stored? 
-			"youtubeVideoQuality": "highest",       // What video quality should be used? 
-			"queueParallelism": 2,                  // How many parallel downloads/encodes should be started? 
-			"progressTimeout": 500                 // How long should be the interval of the progress reports 
+			'ffmpegPath': './ffmpeg',        			// Where is the FFmpeg binary located?
+			'outputPath': './mp3',    			// Where should the downloaded and encoded files be stored? 
+			'youtubeVideoQuality': 'highest',       // What video quality should be used? 
+			'queueParallelism': 2,                  // How many parallel downloads/encodes should be started? 
+			'progressTimeout': 500                 // How long should be the interval of the progress reports 
 		});
 		return YD;
 	}
@@ -69,21 +69,21 @@ module.exports = function(Playyou, app, auth, database) {
 	
 	app.get('/api/playyou/playSong', function(req, res){
 		//console.log(req.headers);
-		var rangeHeader = req.get("Range");
+		var rangeHeader = req.get('Range');
 		//console.log(rangeHeader);
-		if(rangeHeader != null)
+		/*if(rangeHeader !== null)
 		{
 		   //return res.sendStatus(200);
-		}
+		}*/
 		//console.log(req.user);
 		
 		var loc = req.query.loc;
 		console.log(loc);
-		if(loc == null) return res.sendStatus(406);
+		if(loc === null) return res.sendStatus(406);
 		//var loc = './mp3/8. Redbone - Come And Get Your Love.mp3';
-		var size = fs.statSync(loc)["size"];
+		var size = fs.statSync(loc).size;
 		console.log(size);
-		res.writeHead(200, { "Content-Range": "bytes " + 0 + "-" + size-1 + "/" + size, "Accept-Ranges": "bytes", "Content-Length": size, "Content-Type": "audio/mp3" });
+		res.writeHead(200, { 'Content-Range': 'bytes ' + 0 + '-' + size-1 + '/' + size, 'Accept-Ranges': 'bytes', 'Content-Length': size, 'Content-Type': 'audio/mp3' });
 		fs.createReadStream(loc).pipe(res);
 	});
 
@@ -97,18 +97,18 @@ module.exports = function(Playyou, app, auth, database) {
 		
 		YD.download(req.body.url);
 		
-		YD.on("finished", function(data) {
-			console.log("Finished");
+		YD.on('finished', function(data) {
+			console.log('Finished');
 			console.dir(data);
 			res.send(JSON.stringify({info: data}));
 		});
 		 
-		YD.on("error", function(error) {
-			console.log("Error " + error);
+		YD.on('error', function(error) {
+			console.log('Error ' + error);
 		});
 		 
-		YD.on("progress", function(progress) {
-			console.log("Progress:");
+		YD.on('progress', function(progress) {
+			console.log('Progress:');
 			console.log(progress);
 		});
 	});
@@ -122,22 +122,23 @@ module.exports = function(Playyou, app, auth, database) {
 			
 			for(var i = 0; i < songs.length; i++){
 				var song = songs[i];
-				if(song.votes.up.length >= 3 && checkVotes(song)){
+				/*if(song.votes.up.length >= 3 && checkVotes(song)){
 					song.status = true;
-					if(!song.loc){
+					if(song.loc == undefined){
 						downloadSong(song);
-					} //else {
-					console.log("Saving: " + song.status);
+						return;
+					}
+					/*console.log('Saving: ' + song.status);
 					song.save(function(err){
 						if(err){
 							console.log(err);
 							return;// res.sendStatus(507);
 						}
 						return; //res.sendStatus(200);
-					});
+					});*/
 					//}
-				}
-				else {
+				//}
+				/*else {
 					song.status = false;
 					song.save(function(err){
 						if(err) {
@@ -146,7 +147,22 @@ module.exports = function(Playyou, app, auth, database) {
 						}
 						return; //res.sendStatus(200);
 					});
-				}
+				}*/
+				/*var fs = require('fs');
+				var path = song.loc;
+				if(path != undefined && song.status) {
+					try
+					{
+						fs.statSync(path).isFile();
+					}
+					catch (err)
+					{
+						console.log(song.title);
+						console.log(path);
+						downloadSong(song);
+						return;
+					}
+				}*/
 			}
 			//console.log(songs);
 			return; //res.send({songs: songs});
@@ -213,7 +229,7 @@ module.exports = function(Playyou, app, auth, database) {
 	function orderSongs(a,b) {
 		if (a._id.getTimestamp() < b._id.getTimestamp()) return 1;
 		if (a._id.getTimestamp() > b._id.getTimestamp()) return -1;
-		console.log("No Change");
+		console.log('No Change');
 		return 0;
 	}
 	
@@ -233,11 +249,11 @@ module.exports = function(Playyou, app, auth, database) {
 				return res.sendStatus(510);
 			}
 			
-			if(req.body.newVote != undefined){
-				if(req.body.newVote == 1){
+			if(req.body.newVote !== undefined){
+				if(req.body.newVote === 1){
 					song.votes.up.push(req.user._id);
 				}
-				else if(req.body.newVote == -1){
+				else if(req.body.newVote === -1){
 					song.votes.down.push(req.user._id);
 				}
 				else{
@@ -263,14 +279,14 @@ module.exports = function(Playyou, app, auth, database) {
 			}
 			
 			//if(song.votes.up.length >= Math.ceil((11-song.votes.abs.length)/2)){
-			console.log("Up: " + song.votes.up.length);
-			console.log("Need: " + Math.ceil((5-song.votes.abs.length)/2));
+			console.log('Up: ' + song.votes.up.length);
+			console.log('Need: ' + Math.ceil((5-song.votes.abs.length)/2));
 			if(song.votes.up.length >= 3 && checkVotes(song)){
 				song.status = true;
 				if(!song.loc){
 					downloadSong(song);
 				} //else {
-				console.log("Saving: " + song.status);
+				console.log('Saving: ' + song.status);
 				song.save(function(err){
 					if(err){
 						console.log(err);
@@ -300,8 +316,6 @@ module.exports = function(Playyou, app, auth, database) {
 			song.votes.up.push(req.user._id);
 		} else {
 			return res.sendStatus(412);
-			song.submitted_by = req.body.name;
-			song.votes.up.push(req.body._id);
 		}
 		song.save(function(err){
 			if(err) {
@@ -313,13 +327,13 @@ module.exports = function(Playyou, app, auth, database) {
 	});
 	
 	function downloadSong(song){
-		console.log("DL: " + song.link);
-		console.log("DL: " + song.title);
+		console.log('DL: ' + song.link);
+		console.log('DL: ' + song.title);
 		var YD = setUpYD();
 		YD.download(song.link);
 		
-		YD.on("finished", function(data) {
-			console.log("Finished");
+		YD.on('finished', function(data) {
+			console.log('Finished');
 			console.dir(data);
 			song.loc = data.file;
 			song.save(function(err){
@@ -327,25 +341,26 @@ module.exports = function(Playyou, app, auth, database) {
 					console.log(err);
 					//return res.sendStatus(507);
 				}
-				else console.log("Download Loc Saved");
+				else console.log('Download Loc Saved');
 				//return res.sendStatus(200);
 			});
+			//updateDB();
 		});
 		 
-		YD.on("error", function(error) {
-			console.log("Error " + error);
+		YD.on('error', function(error) {
+			console.log('Error ' + error);
 			//return res.sendStatus(503);
 		});
 		 
-		YD.on("progress", function(progress) {
-			console.log("Progress: " + parseFloat(progress.progress.percentage).toFixed(2) + "%");
+		YD.on('progress', function(progress) {
+			console.log('Progress: ' + parseFloat(progress.progress.percentage).toFixed(2) + '%');
 			//console.log(progress);
 		});
 	}
 	
 	app.post('/api/playyou/testDownload', function(req, res){
 		console.log(req.body);
-		if(req.body.link == undefined) return res.sendStatus(500);
+		if(req.body.link === undefined) return res.sendStatus(500);
 		var song = {
 			link: req.body.link
 		};
@@ -353,14 +368,14 @@ module.exports = function(Playyou, app, auth, database) {
 		var YD = setUpYD();
 		YD.download(req.body.link);
 		
-		YD.on("finished", function(data) {
-			console.log("Finished");
+		YD.on('finished', function(data) {
+			console.log('Finished');
 			console.dir(data);
 			return res.sendStatus(200);
 		});
 		 
-		YD.on("error", function(error) {
-			console.log("Error " + error);
+		YD.on('error', function(error) {
+			console.log('Error ' + error);
 			//return res.sendStatus(503);
 		});
 	});
@@ -390,8 +405,8 @@ module.exports = function(Playyou, app, auth, database) {
 		var archive = archiver('zip');
 
 		archive.on('error', function(err){
-			throw err;
 			res.sendStatus(500);
+			throw err;
 		});
 
 		archive.pipe(res);
@@ -408,7 +423,7 @@ module.exports = function(Playyou, app, auth, database) {
 	});	
 	
 	app.get('/api/playyou/downloadAll', function(req, res){
-		console.log("Hit!");
+		console.log('Hit!');
 		
 		/*var getSize = require('get-folder-size');
 		
@@ -430,8 +445,8 @@ module.exports = function(Playyou, app, auth, database) {
 		var archive = archiver('zip');
 
 		archive.on('error', function(err){
+			res.sendStatus(500);
 			throw err;
-			return res.sendStatus(500);
 		});
 		
 		archive.pipe(res);
@@ -444,8 +459,8 @@ module.exports = function(Playyou, app, auth, database) {
 	});
 	
 
-	/*var key = "AIzaSyDjmNPQnA4RqNyYoILp733Jl9MABKQGzXQ";
-	var playlist = "PL-rRWrSIsaj2mRdD0J1_TOXa6Ln3Q1N0J";
+	/*var key = 'AIzaSyDjmNPQnA4RqNyYoILp733Jl9MABKQGzXQ';
+	var playlist = 'PL-rRWrSIsaj2mRdD0J1_TOXa6Ln3Q1N0J';
 
 	var getJSON =require('get-json');
 	var songItems = [];
@@ -453,14 +468,14 @@ module.exports = function(Playyou, app, auth, database) {
 	
 	function getVideoInfo(token){
 		if(!token) getSongs(0);
-			var string = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50";
+			var string = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50';
 			if(token != 'first') {
 				string += '&pageToken=';
 				string += token;
 			}
-			string += "&playlistId=";
+			string += '&playlistId=';
 			string += playlist;
-			string += "&key=";
+			string += '&key=';
 			string += key;
 			getJSON(string, function (err, response){
 				if(err){	console.log(err);}
@@ -498,7 +513,7 @@ module.exports = function(Playyou, app, auth, database) {
 			song.votes.up[i] = i;
 		}
 		song.submitted_by = names[Math.floor(num/10)];
-		song.link = "https://www.youtube.com/watch?v=" + songItems[num].snippet.resourceId.videoId;
+		song.link = 'https://www.youtube.com/watch?v=' + songItems[num].snippet.resourceId.videoId;
 		song.status = true;
 		console.log('Setup Song: ' + num);
 		//console.log(songItems[num]);
@@ -509,8 +524,8 @@ module.exports = function(Playyou, app, auth, database) {
 		var YD = setUpYD();
 		YD.download(song.link);
 		
-		YD.on("finished", function(data) {
-			console.log("Finished");
+		YD.on('finished', function(data) {
+			console.log('Finished');
 			//console.dir(data);
 			song.loc = data.file;
 			song.title = data.title;
@@ -527,18 +542,18 @@ module.exports = function(Playyou, app, auth, database) {
 			});
 		});
 		 
-		YD.on("error", function(error) {
-			console.log("Error " + error);
+		YD.on('error', function(error) {
+			console.log('Error ' + error);
 			getSongs(++num);
 			return;
 		});
 		 
-		YD.on("progress", function(progress) {
-			console.log("Progress:" + num + " (" + parseFloat(progress.progress.percentage).toFixed(2) + "%)");
+		YD.on('progress', function(progress) {
+			console.log('Progress:' + num + ' (' + parseFloat(progress.progress.percentage).toFixed(2) + '%)');
 			//console.log(progress);
 		});
 		
-		YD.on("queueSize", function(size) {
+		YD.on('queueSize', function(size) {
 			console.log(size);
 		});
 	}*/

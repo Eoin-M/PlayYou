@@ -22,9 +22,9 @@ if ((cluster.isMaster) &&
   (process.execArgv.indexOf('--singleProcess')<0)) {
 //if (cluster.isMaster) {
 
-    console.log('for real!');
     // Count the machine's CPUs
     var cpuCount = process.env.CPU_COUNT || require('os').cpus().length;
+	console.log("CPU Count: " + cpuCount);
 
     // Create a worker for each CPU
     for (var i = 0; i < cpuCount; i += 1) {

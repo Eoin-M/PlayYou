@@ -19,7 +19,15 @@ angular.module('mean-factory-interceptor', [])
             return $q.reject(rejection);
           }
           return $q.reject(rejection);
-        }
+        },
+		
+		/*'request': function(request) {
+			/*var uri = $location.protocol() + '://' + $location.host();
+			if(request.url.charAt(0) !== '/') uri += '/';
+			request.url = uri + request.url;
+			console.dir(request);
+			return request;
+		}*/
 
       };
     }

@@ -8,6 +8,16 @@ var plugins = gulpLoadPlugins();
 var defaultTasks = ['clean', 'cssmin', 'uglify', 'prodServe'];
 var assets = require('../config/assets.json');
 
+function tokenizeConfig(config) {
+  var destTokens = _.keys(config)[0].split('/');
+
+  return {
+    srcGlob: _.flatten(_.values(config)),
+    destDir: destTokens[destTokens.length - 2],
+    destFile: destTokens[destTokens.length - 1]
+  };
+}
+
 gulp.task('env:production', function () {
   process.env.NODE_ENV = 'production';
 });
@@ -35,16 +45,6 @@ gulp.task('uglify', function () {
       .pipe(gulp.dest(path.join('bower_components/build', config.destDir)));
   }
 });
-
-function tokenizeConfig(config) {
-  var destTokens = _.keys(config)[0].split('/');
-
-  return {
-    srcGlob: _.flatten(_.values(config)),
-    destDir: destTokens[destTokens.length - 2],
-    destFile: destTokens[destTokens.length - 1]
-  };
-}
 
 gulp.task('prodServe', ['env:production'], function () {
   plugins.nodemon({

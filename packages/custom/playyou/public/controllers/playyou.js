@@ -4,8 +4,8 @@ Array.prototype.last = function() {
     return this[this.length-1];
 }
 
-//window.onerror = function(message, source, lineno, colno) {alert("Hi");}
-/*window.addEventListener("error", function(error) {
+//window.onerror = function(message, source, lineno, colno) {alert('Hi');}
+/*window.addEventListener('error', function(error) {
 	alert('Error');
 });*/
 
@@ -22,25 +22,25 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	$scope.loggedIn = false;
 	$scope.onRandom = false;
 	$scope.limit = 50;
-	//var LinearPos; //LinearPosition of the song in the array when playing normally in a row
+	//var LinearPos; //LinearPosition of the song in the array when playing normallSongsy in a row
 	$scope.songs = [];
 	$scope.currSong = {};
-	var baseUrl = 'http://danu7.it.nuigalway.ie:8620/api/playyou/playSong?loc=';
+	var baseUrl = 'https://eoinmaguire.com/api/playyou/playSong?loc=';
 	//var audio = document.getElementById('audio');
 	var audio = new Audio();
 	audio.volume = 0.8;
-	audio.preload = "auto";
-	audio.addEventListener("timeupdate", progressBar, true);
-	audio.addEventListener("loadedmetadata", loadedMetaData, true);
-	$scope.duration = "0:00";
-	$scope.currTime = "0:00";
+	audio.preload = 'auto';
+	audio.addEventListener('timeupdate', progressBar, true);
+	audio.addEventListener('loadedmetadata', loadedMetaData, true);
+	$scope.duration = '0:00';
+	$scope.currTime = '0:00';
 	//window.AudioContext = window.AudioContext||window.webkitAudioContext;
 	//var context = new AudioContext();
 	var sliding = false; //stops seekbar from moving with music while a user is sliding it
 	var seekbar = $('#seekbar').slider({ //initialise seekbar slider
 		formatter: function(value) {
 			var time = audio.duration * (value / 1000);
-			if(isNaN(time)) return "0:00";
+			if(isNaN(time)) return '0:00';
 			return formatTime(time);
 		}
 	})
@@ -104,7 +104,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		$scope.onRandom = !$scope.onRandom;
 		
 		if($scope.onRandom){
-			var randomPlaylist = $scope.songs.splice(0, $scope.songs.length-1); //all but the current playing song
+			var randomPlaylist = $scope.songs.splice(0, $scope.songs.length-1); //allSongs but the current playing song
 			randomPlaylist = shuffle(randomPlaylist);
 			randomPlaylist.push($scope.songs.last());
 			$scope.songs = randomPlaylist;
@@ -137,25 +137,25 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	
 	function indexPos(el, a){
 		for(var i = 0; i < a.length; i++){
-			if(el.link == a[i].link) return i;
+			if(el.link === a[i].link) return i;
 		}
 		return -1;
 	}
 	
 	$scope.nextSong = function(){
-		seekbar.slider('setValue', 0); //takes a while to do the next steps which eventually auto set time to 0. Do here instead.
+		seekbar.slider('setValue', 0); //takes a while to do the next steps which eventuallSongsy auto set time to 0. Do here instead.
 		/*$scope.currSong.title = $scope.songs[LinearPos].title;
 		$scope.currSong.artist = $scope.songs[LinearPos].artist;
 		$scope.currSong.submitted_by = $scope.songs[LinearPos].submitted_by;*/
 		$scope.currSong = $scope.songs.last();
-		document.title = $scope.currSong.title + " - PlayYou";
+		document.title = $scope.currSong.title + ' - PlayYou';
 		var playSongLoc = $scope.songs.last().loc;
 		audio.src = baseUrl + encodeURIComponent(playSongLoc);
 		audio.load();
 		/*$http.get('/api/playyou/playSong?loc=' + encodeURIComponent(playSongLoc))
 		.success(function(data){
 			//console.dir(data);
-			console.log("Success");
+			console.log('Success');
 			var source = context.createBufferSource(); // creates a sound source
 			context.decodeAudioData(data, function(buffer){
 			source.buffer = buffer;                    // tell the source which sound to play
@@ -164,7 +164,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			});
 		})
 		.error(function(data, status){
-			alert("Error: " + status);
+			alert('Error: ' + status);
 		});*/
 	}
 	
@@ -181,7 +181,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			//audio.play();
 		} else {
 			var tempSong = 0;
-			while(!$scope.songs[tempSong].loc || !$scope.songs[tempSong].status){
+			while(!$scope.songs[tempSong].loc || !$scope.checkVotes($scope.songs[tempSong]) || !$scope.songs[tempSong].status){
 				tempSong++;
 			}
 			var tempArray = $scope.songs.slice();
@@ -194,7 +194,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	
 	$scope.skipNext = function(){
 		var tempSong = $scope.songs.length - 2;
-		while(!$scope.songs[tempSong].loc || !$scope.songs[tempSong].status){
+		while(!$scope.songs[tempSong].loc || !$scope.checkVotes($scope.songs[tempSong]) || !$scope.songs[tempSong].status){
 			tempSong--;
 		}
 		var tempArray = $scope.songs.slice();
@@ -205,22 +205,22 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	}
 	
 	window.onkeydown = function (KeyEvent) {
-		if(KeyEvent.target.tagName == 'INPUT') return;
+		if(KeyEvent.target.tagName === 'INPUT') return;
 		if (KeyEvent.keyCode === 32){
 			KeyEvent.preventDefault();
 			$scope.changePlayState();
 		}
-		else if(KeyEvent.which == 39){
+		else if(KeyEvent.which === 39){
 			audio.currentTime += 10;
 		}
-		else if(KeyEvent.which == 37){
+		else if(KeyEvent.which === 37){
 			if(audio.currentTime <= 5) {
 				$scope.skipPrev();
 				return;
 			}
 			audio.currentTime -= 10;
 		}
-		else if(KeyEvent.which == 38){
+		else if(KeyEvent.which === 38){
 			KeyEvent.preventDefault();
 			volumePopIn();
 			var v = volume.slider('getValue');
@@ -228,7 +228,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			if(v > 100) v = 100;
 			changeVolume(v);
 		}
-		else if(KeyEvent.which == 40){
+		else if(KeyEvent.which === 40){
 			KeyEvent.preventDefault();
 			volumePopIn();
 			var v = volume.slider('getValue');
@@ -236,21 +236,21 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			if(v < 0) v = 0;
 			changeVolume(v);
 		}
-		else if(KeyEvent.which == 78){
+		else if(KeyEvent.which === 78){
 			$scope.skipNext();
 		}
-		else if(KeyEvent.which == 66){
+		else if(KeyEvent.which === 66){
 			$scope.skipPrev();
 		}
 	}
 	
 	function volumePopIn() {		
-		$("#volume").children("div.tooltip-main").addClass('in');
-		setTimeout(function(){ $("#volume").children().removeClass('in'); }, 1000);
+		$('#volume').children('div.tooltip-main').addClass('in');
+		setTimeout(function(){ $('#volume').children().removeClass('in'); }, 1000);
 	}
 	
 	var volumeScrollFN = function(e) {
-		console.log(e.wheelDelta);
+		//console.log(e.wheelDelta);
 		
 		if($scope.volumeScroll) {
 			e.preventDefault();
@@ -263,7 +263,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		}
 	};
 
-	if ("onmousewheel" in document) {
+	if ('onmousewheel' in document) {
 		document.onmousewheel = volumeScrollFN;
 	} else {
 		document.addEventListener('DOMMouseScroll', volumeScrollFN, false);
@@ -274,12 +274,18 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		audio.volume = v/100;
 	}
 	
+	$scope.searchPlayThis = function(song) {
+		$('#searchDiv').blur();
+		$scope.interacting = $scope.searching = false;
+		$scope.playThis(song);
+	}
+	
 	$scope.playThis = function(song){
 		if($scope.selecting) return;
-		if(song.link == $scope.currSong.link) $scope.changePlayState();
+		if(song.link === $scope.currSong.link) $scope.changePlayState();
 		else {
 			var tempSong = $scope.songs.length - 1;
-			while($scope.songs[tempSong].link != song.link){
+			while($scope.songs[tempSong].link !== song.link){
 				tempSong--;
 			}
 			var tempArray = $scope.songs.slice();
@@ -306,7 +312,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	//var io = require('socket.io-client');
 	//var ss = require('socket.io-stream');
 
-	/*var socket = io.connect('http://danu7.it.nuigalway.ie:8621/musicStream');
+	/*var socket = io.connect('http://eoinmaguire.com:8080/musicStream');
 	//var stream = ss.createStream();
 	//var filename = 'profile.jpg';
 
@@ -327,7 +333,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		  console.log(audio.src);
 	  });
 	  
-	  var audio = document.getElementById("audio");
+	  var audio = document.getElementById('audio');
 	});*/
 	
 	//stream.pipe(fs.createWriteStream('song.mp3'));
@@ -340,13 +346,13 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	}*/
 	
 	$scope.increaseLimit = function(){
-		if($scope.songs == [] || $scope.limit >= $scope.songs.length) return;
+		if($scope.songs === [] || $scope.limit >= $scope.songs.length) return;
 		$scope.limit += 50;
 	}
 	
 	$scope.voteFilter = function(song){
-		if(song.upvotes == 11) return false;
-		if(song.status == false || song.vote == null) return true;
+		if(song.upvotes === 11) return false;
+		if(!$scope.checkVotes(song) || song.vote === null || song.vote === undefined) return true;
 		return false;
 	}
 	
@@ -356,7 +362,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			console.dir(data.songs);
 			$scope.songs = $scope.OGsongs = data.songs;
 			var tempSong = $scope.songs.length - 1;
-			while(!$scope.songs[tempSong].loc || !$scope.songs[tempSong].status){
+			while(!$scope.songs[tempSong].loc || !$scope.checkVotes($scope.songs[tempSong]) || !$scope.songs[tempSong].status){
 				tempSong--;
 			}
 			var tempArray = $scope.songs.slice();
@@ -365,33 +371,54 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			//$scope.changePlayState();
 		})
 		.error(function(data, status){
-			alert("Error: " + status);
+			alert('Error: ' + status);
 		});
 	}
 	
-	function checkVotes(song){
+	String.prototype.contains = function(substring) {
+		if(emptyString(substring)) return -1;
+		return this.toLowerCase().indexOf(substring.toLowerCase());
+	};
+	
+	$scope.searchFilter = function(song) {
+		if(emptyString($scope.searchParam)) return false;
+		if(song.title.contains($scope.searchParam) !== -1) return true;
+		if(song.artist.contains($scope.searchParam) !== -1) return true;
+		return false;
+	}
+	
+	$scope.searchBold = function(str) {
+		var cutOffPoint = str.contains($scope.searchParam);
+		if(cutOffPoint === -1) return str;
+		return str.substring(0, cutOffPoint) + '<span class="searchBoldColor">' + str.substring(cutOffPoint, cutOffPoint + $scope.searchParam.length) + '</span>' + str.substring(cutOffPoint + $scope.searchParam.length);
+	}
+	
+	$scope.neccesaryVotes = 0.6;
+	
+	$scope.checkVotes = function(song){
+		if(song.upvotes < 3) return false;
 		var ups = song.upvotes + song.absvotes / 3;
 		var total = ups + song.downvotes;
 		
-		return (ups/total > 0.6);
+		return (ups/total > $scope.neccesaryVotes);
 	}
 	
 	$scope.songVote = function(song, v){
-		if(song.status && $scope.selecting) return;
-		if(song.upvotes == 11) return;
+		if($scope.checkVotes(song) && $scope.selecting) return;
+		if(song.upvotes === 11) return;
 		if(!$scope.loggedIn) return;
 		console.log(song.upvotes);
 		
-		if(song.vote == 1) song.upvotes--;
-		else if(song.vote == 0) song.absvotes--;
-		else if(song.vote == -1) song.downvotes--;
+		if(song.vote === 1) song.upvotes--;
+		else if(song.vote === 0) song.absvotes--;
+		else if(song.vote === -1) song.downvotes--;
 		
-		if(song.vote == v) v = null;
-		else if(v == 1) song.upvotes++;
-		else if(v == 0) song.absvotes++;
-		else if(v == -1) song.downvotes++;
+		if(song.vote === v) v = null;
+		else if(v === 1) song.upvotes++;
+		else if(v === 0) song.absvotes++;
+		else if(v === -1) song.downvotes++;
 		
-		if(song.upvotes >= 3 && checkVotes(song)) song.status = true;
+		if($scope.checkVotes(song)) song.status = true;
 		else song.status = false;
 		
 		console.log(song.vote);
@@ -421,15 +448,15 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	}
 	
 	$scope.selectDeselect = function(){
-		var all = true;
+		var allSongs = true;
 		for(var i = 0; i < $scope.songs.length; i++){
 			if($scope.songs[i].notSelected){
-				all = false;
+				allSongs = false;
 				break;
 			}
 		}
 		
-		if(all){
+		if(allSongs){
 			for(var i = 0; i < $scope.songs.length; i++){
 				$scope.songs[i].notSelected = true;
 			}
@@ -444,32 +471,32 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		$scope.votableSongs = 0;
 		if(!$scope.songs) return true;
 		for(var i = 0; i < $scope.songs.length; i++){
-			if($scope.songs[i].vote == null && $scope.songs[i].upvotes != 11) $scope.votableSongs++;
+			if($scope.songs[i].vote === undefined && $scope.songs[i].upvotes !== 11) $scope.votableSongs++;
 		}
-		return ($scope.votableSongs == 0);
+		return ($scope.votableSongs === 0);
 	}
 	
 	$scope.countDownload = function(){
 		$scope.downloadCount = 0;
 		if(!$scope.songs) return true;
 		for(var i = 0; i < $scope.songs.length; i++){
-			if(!$scope.songs[i].notSelected && $scope.songs[i].status && $scope.songs[i].loc) $scope.downloadCount++;
+			if(!$scope.songs[i].notSelected && $scope.checkVotes($scope.songs[i]) && $scope.songs[i].status && $scope.songs[i].loc) $scope.downloadCount++;
 		}
 		console.log($scope.downloadCount);
-		return ($scope.downloadCount == 0);
+		return ($scope.downloadCount === 0);
 	}
 	
 	$scope.download = function(){
 		var hrefText = '';
 		for(var i = 0; i < $scope.songs.length; i++){
-			if(!$scope.songs[i].notSelected && $scope.songs[i].status && $scope.songs[i].loc){
-				if(hrefText != '') hrefText += '&';
+			if(!$scope.songs[i].notSelected && $scope.checkVotes($scope.songs[i]) && $scope.songs[i].status && $scope.songs[i].loc){
+				if(hrefText !== '') hrefText += '&';
 				hrefText += 'loc=';
 				hrefText += encodeURIComponent($scope.songs[i].loc);
 			}
 		}
 		console.log(hrefText);
-		if(hrefText == '') return;
+		if(hrefText === '') return;
 		console.log('loc=' + encodeURIComponent($scope.songs[0].loc) + '&loc=' + encodeURIComponent($scope.songs[1].loc));
 		
 		var anchor = angular.element('<a/>');
@@ -492,18 +519,18 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			 })[0].click();
 		})
 		.error(function(data, status){
-			alert("Error: " + status);
+			alert('Error: ' + status);
 		});
 		*/
 	}
 	
-	$scope.correctTitle = " ";
-	$scope.correctLink = " ";
+	$scope.correctTitle = ' ';
+	$scope.correctLink = ' ';
 	
 	$scope.checkTitle = function(title){
 		for(var i = 0; i < $scope.songs.length; i++){
-			if(title.toLowerCase() == $scope.songs[i].title.toLowerCase()){
-				$scope.correctTitle = "Song Title Already Submitted by: " + $scope.songs[i].submitted_by;
+			if(title.toLowerCase() === $scope.songs[i].title.toLowerCase()){
+				$scope.correctTitle = 'Song Title Already Submitted by: ' + $scope.songs[i].submitted_by;
 				return;
 			} else {
 				$scope.correctTitle = null;
@@ -513,27 +540,27 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	
 	$scope.checkLink = function(link){
 		console.log(link);
-		if(link === undefined || link == "") { $scope.correctLink = "Please Enter a Correct Link"; $scope.$apply(); return; }
-		var correctLength = link.split("&");
+		if(link === undefined || link === '') { $scope.correctLink = 'Please Enter a Correct Link'; $scope.$apply(); return; }
+		var correctLength = link.split('&');
 		if(correctLength.length > 1) link = correctLength[0];
 		var vID = link.split('v=');
-		if(vID[1] === null || vID[1] === undefined) { $scope.correctLink = "Youtube VideoID Not Present"; return; }
-		vID = vID[1].split("&");
+		if(vID[1] === null || vID[1] === undefined) { $scope.correctLink = 'Youtube VideoID Not Present'; return; }
+		vID = vID[1].split('&');
 		vID = vID[0];
 		$scope.newSong.link = link;
 		if(PlaylistLink(link)) { return; }
 		else {
-			var url = "https://www.googleapis.com/youtube/v3/videos";
-			var videoId = "id=" + vID;
-			var apiKey = "key=AIzaSyAaSh1l3C8s06zSRyNSh-GUnQr7nhZyHxo";
-			var part = "part=snippet";
-			var field = "fields=items(snippet(title))";
+			var url = 'https://www.googleapis.com/youtube/v3/videos';
+			var videoId = 'id=' + vID;
+			var apiKey = 'key=AIzaSyAaSh1l3C8s06zSRyNSh-GUnQr7nhZyHxo';
+			var part = 'part=snippet';
+			var field = 'fields=items(snippet(title))';
 
-			$.get(url + "?" + apiKey + "&" + videoId + "&" + field + "&" + part, function(response) {
+			$.get(url + '?' + apiKey + '&' + videoId + '&' + field + '&' + part, function(response) {
 				console.log(response);
 				//if(response.pageInfo.totalResults > 0) {$scope.correctLink = null; $scope.$apply();}
 				if(response.items[0]) {
-					var guess = response.items[0].snippet.title.split(" - ");
+					var guess = response.items[0].snippet.title.split(' - ');
 					console.log(guess);
 					//if(guess.length > 1){
 						if(emptyString($scope.newSong.title) && guess[1]) {
@@ -545,19 +572,19 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 					$scope.correctLink = null;
 					$scope.$apply();
 				}
-				else { $scope.correctLink = "Youtube Link Not Valid"; $scope.$apply();}
+				else { $scope.correctLink = 'Youtube Link Not Valid'; $scope.$apply();}
 			});
 		}
 	}
 	
 	function emptyString(str){
-		return (str == "" || str == undefined);
+		return (str === '' || str === undefined || str === null);
 	}
 	
 	function PlaylistLink(link){
 		for(var i = 0; i < $scope.songs.length; i++){
-			if($scope.songs[i].link == link) {
-				$scope.correctLink = "That Song Has Already Been Submitted by: " + $scope.songs[i].submitted_by;
+			if($scope.songs[i].link === link) {
+				$scope.correctLink = 'That Song Has Already Been Submitted by: ' + $scope.songs[i].submitted_by;
 				return true;
 			}
 		}
@@ -585,16 +612,22 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	
 	$('#newSongModal').on('hidden.bs.modal', function () {
 		$scope.newSong = undefined;
-		$scope.correctLink = " ";
+		$scope.correctLink = ' ';
 		$scope.$apply();
 	});
 	
 	$scope.currVideo = {};
 	
-	$scope.playSong = function(song){
+	$scope.searchPlayVideo = function(song) {
+		$('#searchDiv').blur();
+		$scope.interacting = $scope.searching = false;
+		$scope.playVideo(song);
+	}
+	
+	$scope.playVideo = function(song){
 		if($scope.selecting) return;
 		console.dir(song);
-		var lk = 'http://www.youtube.com/embed/' + song.link.split('v=')[1];
+		var lk = 'https://www.youtube.com/embed/' + song.link.split('v=')[1];
 		$scope.currVideo.title = song.title;
 		$scope.currVideo.artist = song.artist;
 		$scope.currVideo.link = $sce.trustAsResourceUrl(lk);

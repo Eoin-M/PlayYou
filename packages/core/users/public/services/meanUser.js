@@ -45,12 +45,11 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
 		var json = null, error = null;
 		  try {
 			json = url_base64_decode(str);
-			json = (JSON.parse(decodeURI(json)), undefined, 2);
+			json = JSON.parse(decodeURI(json));
 		  } catch (e) {
 			error = e;
-		console.log(e);
+			console.log(e);
 		  }
-		console.log(json);
 		return json;
 	}
 
@@ -119,7 +118,7 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
       var encodedUser, user, destination;
       if (angular.isDefined(response.token)) {
         localStorage.setItem('JWT', response.token);
-        user = decodeToken(response.token.split('.')[1]);
+        user = decodeToken(response.token);
         //user = JSON.parse(encodedUser); 
       }
       destination = angular.isDefined(response.redirect) ? response.redirect : destination;

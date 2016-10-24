@@ -156,3 +156,100 @@ a:-webkit-any-link {
 .downloadBtns {
 	margin: 5px;
 }
+
+/* AUTOCOMPLETE */
+
+.autocomplete{
+  width: 100%;
+  position: relative;
+  margin-top: 40px;
+  margin-bottom: -40px;
+}
+
+.autocomplete input{
+  display: block;
+}
+
+.autocomplete ul{
+  position: absolute;
+  padding: 0px;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  max-height: 600px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.autocomplete li{
+  text-align: left;
+  list-style:none;
+  width: 100%;
+  /*background-color: #fff;*/
+}
+
+.searchBoldColor {
+	color: #77bffe;
+}
+
+div:focus {
+	outline: none;
+}
+
+.playHide {
+	visibility: hidden;
+}
+
+.autocomplete li.active{
+  width: 100%;
+  background-color: #4bf;
+}
+
+.autocomplete .highlight {
+  background-color: #E2E2E2;
+}
+
+.autocomplete li.active .highlight {
+  background: #666;
+  color: #fff;
+}
+
+/* SCROLLBAR CHROME */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 0px;
+}
+
+::-webkit-scrollbar:hover {
+  height: 50px;
+}
+
+::-webkit-scrollbar-button {
+  width: 10px;
+  height: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #009871;
+  border: 0px none #ffffff;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #008a67;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #077358;
+}
+
+::-webkit-scrollbar-track {
+  background: #e4e4e4;
+  border: 0px none #ffffff;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

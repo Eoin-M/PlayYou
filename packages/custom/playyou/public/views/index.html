@@ -28,7 +28,7 @@
 					<div class="songDets">
 						<span>{{song.title}}</span><br>
 						<div class="songSmallDets"><span>{{song.artist}}</span><span class="songPerson"> - <span class="songPerson">{{song.submitted_by}}</span></div>
-						<a ng-click="playSong(song)" style="color:inherit; cursor:pointer;">{{song.link}}</a>
+						<a ng-click="playVideo(song)" style="color:inherit; cursor:pointer;">{{song.link}}</a>
 					</div>
 				</div>
 			</div>
@@ -36,14 +36,35 @@
 		<!-- PLAYLIST -->
 		<div class="col-lg-5 col-md-6 col-sm-12 col-xs-12 col-lg-offset-2" id="voted">
 			<div style="min-height: 140px">
-				<div class="btn btn-primary col-xs-6 downloadBtns" target="_self" href="/api/playyou/downloadAll" download='playlist.zip'>Download Entire Playlist</div>
+				<div id="searchDiv" class="autocomplete" tabindex="-1" ng-focus="interacting = true" ng-blur="interacting = false">
+					<input type="text" ng-model="searchParam" placeholder="Search..." class="form-control" ng-focus="searching = true" ng-blur="searching = false">
+					<ul ng-show="searching || interacting" class="list-group">
+						<li class="list-group-item" style="padding:0px;" ng-repeat="song in songs | filter:searchFilter | orderBy:'title' | limitTo:50">
+							<div ng-class="{songBorder:(song.vote == null && song.upvotes != 11)}" class="no-overflow well well-sm songContainer" style="margin:0px;" ng-click="selectSong(song)">
+								<div style="float: right;">
+									<div ng-class="{songUp:song.vote == 1}"><a ng-click="songVote(song, 1)" ng-class="{'main songUp songVoteGlow':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrow-up" /><span> {{song.upvotes}}</span></a></div>
+									<div ng-class="{songAbst:song.vote == 0}"><a ng-click="songVote(song, 0)" ng-class="{'main songAbst':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrows-h" /><span> {{song.absvotes}}</span></a></div>
+									<div ng-class="{songDown:song.vote == -1}"><a ng-click="songVote(song, -1)" ng-class="{'main songDown':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrow-down" /><span> {{song.downvotes}}</span></a></div>
+								</div>
+								<a class="fa fa-3x fa-play-circle-o" ng-class="{playHide:!checkVotes(song), 'fa-pause-circle-o':(song.link == currSong.link && playing), 'fa-spin':song.link == currSong.link}" ng-click="playThis(song); interacting = false;" style="float: left; margin-right: 10px; text-decoration: none; cursor: pointer;"/>
+								<div class="songDets">
+									<span ng-bind-html="searchBold(song.title)"></span><br>
+									<div class="songSmallDets"><span ng-bind-html="searchBold(song.artist)"></span><span class="songPerson"> - <span class="songPerson">{{song.submitted_by}}</span></div>
+									<a ng-click="searchPlayVideo(song);" style="color:inherit; cursor:pointer;">{{song.link}}</a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			
+				<!--<div class="btn btn-primary col-xs-6 downloadBtns" target="_self" href="/api/playyou/downloadAll" download='playlist.zip'>Download Entire Playlist</div>
 				<div class="btn btn-primary col-xs-5 downloadBtns" ng-show="selecting" ng-click="selectDeselect()">Select/Deselect All</div><br>
 				<div class="btn btn-primary col-xs-6 downloadBtns" ng-click="selectToDownload()" ng-class="{'btn-danger':selecting}">Select Songs to Download <i class="fa" style="float:right; padding-top:3px;" ng-class="{'fa-close':selecting}" /></div>
-				<div class="btn btn-primary col-xs-5 downloadBtns" ng-disabled="countDownload()" ng-if="selecting" ng-click="download()">Download {{downloadCount}} <i class="fa fa-cloud-download" style="float:right; padding-top:3px;"/></div>
+				<div class="btn btn-primary col-xs-5 downloadBtns" ng-disabled="countDownload()" ng-if="selecting" ng-click="download()">Download {{downloadCount}} <i class="fa fa-cloud-download" style="float:right; padding-top:3px;"/></div>-->
 			</div>
 			<div class="divTitles" data-toggle="collapse" data-target="#alreadyCollapse" ng-click="alreadyCollapsed=!alreadyCollapsed">Already in the Playlist: <i ng-class="{'fa-compress':!alreadyCollapsed}" class="fa fa-expand" style="float: right" /></div>
 			<div id="alreadyCollapse" class="collapse in">
-				<div ng-repeat="song in songs | filter:{status:true} | orderBy:'-' | limitTo:limit" ng-class="{songBorder:(song.vote == null && song.upvotes != 11), notSelected: (selecting && song.notSelected), Selected:(selecting && !song.notSelected)}" class="no-overflow well well-sm songContainer" ng-show="song.status" ng-click="selectSong(song)">
+				<div ng-repeat="song in songs | filter:checkVotes | orderBy:'-' | limitTo:limit" ng-class="{songBorder:(song.vote == null && song.upvotes != 11), notSelected: (selecting && song.notSelected), Selected:(selecting && !song.notSelected)}" class="no-overflow well well-sm songContainer" ng-click="selectSong(song)">
 					<div style="float: right;">
 						<div ng-class="{songUp:song.vote == 1}"><a ng-click="songVote(song, 1)" ng-class="{'main songUp songVoteGlow':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrow-up" /><span> {{song.upvotes}}</span></a></div>
 						<div ng-class="{songAbst:song.vote == 0}"><a ng-click="songVote(song, 0)" ng-class="{'main songAbst':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrows-h" /><span> {{song.absvotes}}</span></a></div>
@@ -53,7 +74,7 @@
 					<div class="songDets">
 						<span>{{song.title}}</span><br>
 						<div class="songSmallDets"><span>{{song.artist}}</span><span class="songPerson"> - <span class="songPerson">{{song.submitted_by}}</span></div>
-						<a ng-click="playSong(song)" style="color:inherit; cursor:pointer;">{{song.link}}</a>
+						<a ng-click="playVideo(song)" style="color:inherit; cursor:pointer;">{{song.link}}</a>
 					</div>
 				</div>
 			</div>

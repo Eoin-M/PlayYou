@@ -54,7 +54,9 @@
     "serve-favicon": "latest",
     "shelljs": "latest",
     "swig": "latest",
-    "view-helpers": "latest"
+    "view-helpers": "latest",
+    "meanio-circles": "~0.1.5",
+    "meanio-admin": "~0.1.7"
   },
   "devDependencies": {
     "del": "latest",
