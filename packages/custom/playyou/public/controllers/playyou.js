@@ -22,7 +22,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	$scope.loggedIn = false;
 	$scope.onRandom = false;
 	$scope.limit = 50;
-	//var LinearPos; //LinearPosition of the song in the array when playing normallSongsy in a row
+	//var LinearPos; //LinearPosition of the song in the array when playing normally in a row
 	$scope.songs = [];
 	$scope.currSong = {};
 	var baseUrl = 'https://eoinmaguire.com/api/playyou/playSong?loc=';
@@ -205,8 +205,9 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	}
 	
 	window.onkeydown = function (KeyEvent) {
+		//console.log(KeyEvent.keyCode);
 		if(KeyEvent.target.tagName === 'INPUT') return;
-		if (KeyEvent.keyCode === 32){
+		if (KeyEvent.keyCode === 32 || KeyEvent.keyCode === 179){
 			KeyEvent.preventDefault();
 			$scope.changePlayState();
 		}
@@ -467,13 +468,22 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		}
 	}
 	
-	$scope.songsToVote = function(){
+	$scope.songsToVote = function() {
 		$scope.votableSongs = 0;
 		if(!$scope.songs) return true;
 		for(var i = 0; i < $scope.songs.length; i++){
-			if($scope.songs[i].vote === undefined && $scope.songs[i].upvotes !== 11) $scope.votableSongs++;
+			if(($scope.songs[i].vote === undefined || $scope.songs[i].vote === null) && $scope.songs[i].upvotes !== 11) $scope.votableSongs++;
 		}
 		return ($scope.votableSongs === 0);
+	}
+	
+	$scope.countPlaylist = function() {
+		$scope.playlistCount = 0;
+		if(!$scope.songs) return true;
+		for(var i = 0; i < $scope.songs.length; i++){
+			if($scope.checkVotes($scope.songs[i])) $scope.playlistCount++;
+		}
+		return ($scope.playlistCount === 0);
 	}
 	
 	$scope.countDownload = function(){

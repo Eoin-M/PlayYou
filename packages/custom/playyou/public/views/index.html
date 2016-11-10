@@ -62,7 +62,7 @@
 				<div class="btn btn-primary col-xs-6 downloadBtns" ng-click="selectToDownload()" ng-class="{'btn-danger':selecting}">Select Songs to Download <i class="fa" style="float:right; padding-top:3px;" ng-class="{'fa-close':selecting}" /></div>
 				<div class="btn btn-primary col-xs-5 downloadBtns" ng-disabled="countDownload()" ng-if="selecting" ng-click="download()">Download {{downloadCount}} <i class="fa fa-cloud-download" style="float:right; padding-top:3px;"/></div>-->
 			</div>
-			<div class="divTitles" data-toggle="collapse" data-target="#alreadyCollapse" ng-click="alreadyCollapsed=!alreadyCollapsed">Already in the Playlist: <i ng-class="{'fa-compress':!alreadyCollapsed}" class="fa fa-expand" style="float: right" /></div>
+			<div class="divTitles" data-toggle="collapse" data-target="#alreadyCollapse" ng-click="alreadyCollapsed=!alreadyCollapsed">Already in the Playlist: <span ng-hide="countPlaylist()">{{playlistCount}}<i ng-class="{'fa-compress':!alreadyCollapsed}" class="fa fa-expand" style="float: right" /></div>
 			<div id="alreadyCollapse" class="collapse in">
 				<div ng-repeat="song in songs | filter:checkVotes | orderBy:'-' | limitTo:limit" ng-class="{songBorder:(song.vote == null && song.upvotes != 11), notSelected: (selecting && song.notSelected), Selected:(selecting && !song.notSelected)}" class="no-overflow well well-sm songContainer" ng-click="selectSong(song)">
 					<div style="float: right;">

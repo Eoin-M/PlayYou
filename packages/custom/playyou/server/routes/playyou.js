@@ -148,7 +148,7 @@ module.exports = function(Playyou, app, auth, database) {
 						return; //res.sendStatus(200);
 					});
 				}*/
-				/*var fs = require('fs');
+				var fs = require('fs');
 				var path = song.loc;
 				if(path != undefined && song.status) {
 					try
@@ -162,7 +162,7 @@ module.exports = function(Playyou, app, auth, database) {
 						downloadSong(song);
 						return;
 					}
-				}*/
+				}
 			}
 			//console.log(songs);
 			return; //res.send({songs: songs});
@@ -181,6 +181,7 @@ module.exports = function(Playyou, app, auth, database) {
 			
 			for(var i = 0; i < songs.length; i++){
 				//songs[songs.length-1]._id.str = songs[songs.length-1]._id.getTimestamp().getTime()/1000; //not overwriting object
+				songs[i].vote = null;
 				if(req.user){
 					if(songs[i].votes.up.indexOf(req.user._id) > -1) songs[i].vote = 1;				
 					else if(songs[i].votes.down.indexOf(req.user._id) > -1) songs[i].vote = -1;
@@ -189,7 +190,6 @@ module.exports = function(Playyou, app, auth, database) {
 				songs[i].upvotes = songs[i].votes.up.length;
 				songs[i].downvotes = songs[i].votes.down.length;
 				songs[i].absvotes = songs[i].votes.abs.length;
-				//songs.sort(orderSongs);
 			}
 			
 			return res.send({songs: songs});
@@ -226,13 +226,6 @@ module.exports = function(Playyou, app, auth, database) {
 		}).skip(skip).sort({_id:1});
 	});
 	
-	function orderSongs(a,b) {
-		if (a._id.getTimestamp() < b._id.getTimestamp()) return 1;
-		if (a._id.getTimestamp() > b._id.getTimestamp()) return -1;
-		console.log('No Change');
-		return 0;
-	}
-	
 	function checkVotes(song){
 		var ups = song.votes.up.length + song.votes.abs.length / 3;
 		var total = ups + song.votes.down.length;
@@ -242,6 +235,8 @@ module.exports = function(Playyou, app, auth, database) {
 	
 	app.post('/api/playyou/vote', function(req, res){
 		if(!req.user) return res.sendStatus(412);
+		console.log('Old: ' + req.body.oldVote);
+		console.log('New: ' + req.body.newVote);
 		
 		Song.findOne({'link': req.body.songLink }, function (err, song) {
 			if (err){
@@ -256,36 +251,34 @@ module.exports = function(Playyou, app, auth, database) {
 				else if(req.body.newVote === -1){
 					song.votes.down.push(req.user._id);
 				}
-				else{
+				else if(req.body.newVote === 0) {
 					song.votes.abs.push(req.user._id);
 				}
 			}
 			
 			if(req.body.oldVote != undefined) {
 				var remove;
-				if(req.body.oldVote == 1){
+				if(req.body.oldVote === 1){
 					remove = song.votes.up.indexOf(req.user._id);
 					if(remove > -1) song.votes.up.splice(remove, 1);
 				}
-				else if(req.body.oldVote == -1){
+				else if(req.body.oldVote === -1){
 					remove = song.votes.down.indexOf(req.user._id);
 					if(remove > -1) song.votes.down.splice(remove, 1);
 				}
-				else{
+				else if(req.body.oldVote === 0) {
 					remove = song.votes.abs.indexOf(req.user._id);
 					if(remove > -1) song.votes.abs.splice(remove, 1);
 				}
-				if(remove == -1) console.log('User ID not found in any vote array');
+				if(remove === -1) console.log('User ID not found in any vote array');
 			}
 			
 			//if(song.votes.up.length >= Math.ceil((11-song.votes.abs.length)/2)){
-			console.log('Up: ' + song.votes.up.length);
-			console.log('Need: ' + Math.ceil((5-song.votes.abs.length)/2));
 			if(song.votes.up.length >= 3 && checkVotes(song)){
 				song.status = true;
 				if(!song.loc){
 					downloadSong(song);
-				} //else {
+				}
 				console.log('Saving: ' + song.status);
 				song.save(function(err){
 					if(err){
@@ -294,9 +287,7 @@ module.exports = function(Playyou, app, auth, database) {
 					}
 					return res.sendStatus(200);
 				});
-				//}
-			}
-			else {
+			} else {
 				song.status = false;
 				song.save(function(err){
 					if(err) {
