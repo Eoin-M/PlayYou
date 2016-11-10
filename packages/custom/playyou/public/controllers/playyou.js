@@ -638,10 +638,9 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		if($scope.selecting) return;
 		console.dir(song);
 		var lk = 'https://www.youtube.com/embed/' + song.link.split('v=')[1];
-		$scope.currVideo.title = song.title;
-		$scope.currVideo.artist = song.artist;
-		$scope.currVideo.link = $sce.trustAsResourceUrl(lk);
-		console.log($scope.currVideo.link);
+		$scope.currVideo = song;
+		$scope.currVideo.embedLink = $sce.trustAsResourceUrl(lk);
+		console.log($scope.currVideo.embedLink);
 		$('#currVideoModal').modal('show');
 	}
 	

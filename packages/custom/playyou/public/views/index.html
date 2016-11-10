@@ -125,8 +125,13 @@
 		  <div class="modal-body">
 		  <div class="modal-footer">
 			<iframe id="currVideoFrame" style="width: 100%; height: 300px;"
-				ng-src="{{currVideo.link}}" webkitallowfullscreen mozallowfullscreen allowfullscreen>
+				ng-src="{{currVideo.embedLink}}" webkitallowfullscreen mozallowfullscreen allowfullscreen>
 			</iframe>
+			<div style="margin-bottom: -20px;">
+				<span ng-class="{songUp:currVideo.vote == 1}"><a ng-click="songVote(currVideo, 1)" data-dismiss="modal" ng-class="{'main songUp songVoteGlow':currVideo.upvotes == 11}" class="defaultVote currVideoVotes"><i class="fa fa-arrow-up" /><span> {{currVideo.upvotes}}</span></a></span>
+				<span ng-class="{songAbst:currVideo.vote == 0}"><a ng-click="songVote(currVideo, 0)" data-dismiss="modal" ng-class="{'main songAbst':currVideo.upvotes == 11}" class="defaultVote currVideoVotes"><i class="fa fa-arrows-h" /><span> {{currVideo.absvotes}}</span></a></span>
+				<span ng-class="{songDown:currVideo.vote == -1}"><a ng-click="songVote(currVideo, -1)" data-dismiss="modal" ng-class="{'main songDown':currVideo.upvotes == 11}" class="defaultVote currVideoVotes"><i class="fa fa-arrow-down" /><span> {{currVideo.downvotes}}</span></a></span>
+			</div>
 		  </div>
 		</div>
 	  </div>
