@@ -273,7 +273,6 @@ module.exports = function(Playyou, app, auth, database) {
 				if(remove === -1) console.log('User ID not found in any vote array');
 			}
 			
-			//if(song.votes.up.length >= Math.ceil((11-song.votes.abs.length)/2)){
 			if(song.votes.up.length >= 3 && checkVotes(song)){
 				song.status = true;
 				if(!song.loc){
