@@ -52,7 +52,7 @@
 		<div class="col-lg-5 col-md-6 col-sm-12 col-xs-12" id="votable">
 			<div class="divTitles" data-toggle="collapse" data-target="#voteCollapse" ng-click="voteCollapsed=!voteCollapsed">Vote On Songs: <span ng-hide="songsToVote()">{{votableSongs}}</span><i ng-class="{'fa-compress':!voteCollapsed}" class="fa fa-expand" style="float: right" /></div>
 			<div id="voteCollapse" class="collapse in">
-				<div ng-repeat="song in OGsongs | filter:voteFilter | orderBy:['-vote', '-'] | limitTo:limit" ng-class="{songBorder:song.vote == null}" class="no-overflow well well-sm songContainer">
+				<div ng-repeat="song in OGsongs | filter:voteFilter | orderBy:'-vote' | limitTo:limit" ng-class="{songBorder:song.vote == null}" class="no-overflow well well-sm songContainer">
 					<div style="float: right;">
 						<div ng-class="{songUp:song.vote == 1}"><a ng-click="songVote(song, 1)" style="color:inherit; cursor:pointer"><i class="fa fa-arrow-up" /><span> {{song.upvotes}}</span></a></div>
 						<div ng-class="{songAbst:song.vote == 0}"><a ng-click="songVote(song, 0)" style="color:inherit; cursor:pointer"><i class="fa fa-arrows-h" /><span> {{song.absvotes}}</span></a></div>
@@ -70,7 +70,7 @@
 		<div class="col-lg-5 col-md-6 col-sm-12 col-xs-12 col-lg-offset-2" id="voted">
 			<div class="divTitles" data-toggle="collapse" data-target="#alreadyCollapse" ng-click="alreadyCollapsed=!alreadyCollapsed">Already in the Playlist: <span ng-hide="countPlaylist()">{{playlistCount}}<i ng-class="{'fa-compress':!alreadyCollapsed}" class="fa fa-expand" style="float: right" /></div>
 			<div id="alreadyCollapse" class="collapse in">
-				<div ng-repeat="song in songs | filter:checkVotes | orderBy:'-' | limitTo:limit" ng-class="{songBorder:(song.vote == null && song.upvotes != 11), notSelected: (selecting && song.notSelected), Selected:(selecting && !song.notSelected)}" class="no-overflow well well-sm songContainer" ng-click="selectSong(song)">
+				<div ng-repeat="song in songs | filter:checkVotes | limitTo:limit" ng-class="{songBorder:(song.vote == null && song.upvotes != 11), notSelected: (selecting && song.notSelected), Selected:(selecting && !song.notSelected)}" class="no-overflow well well-sm songContainer" ng-click="selectSong(song)">
 					<div style="float: right;">
 						<div ng-class="{songUp:song.vote == 1}"><a ng-click="songVote(song, 1)" ng-class="{'main songUp songVoteGlow':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrow-up" /><span> {{song.upvotes}}</span></a></div>
 						<div ng-class="{songAbst:song.vote == 0}"><a ng-click="songVote(song, 0)" ng-class="{'main songAbst':song.upvotes == 11}" class="defaultVote"><i class="fa fa-arrows-h" /><span> {{song.absvotes}}</span></a></div>

@@ -103,15 +103,15 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	$scope.random = function(){
 		$scope.onRandom = !$scope.onRandom;
 		
-		if($scope.onRandom){
-			var randomPlaylist = $scope.songs.splice(0, $scope.songs.length-1); //allSongs but the current playing song
+		if($scope.onRandom){ //if now on random
+			var randomPlaylist = $scope.songs.splice(1, $scope.songs.length); //allSongs but the current playing song
 			randomPlaylist = shuffle(randomPlaylist);
-			randomPlaylist.push($scope.songs.last());
+			randomPlaylist.unshift($scope.songs[0]);
 			$scope.songs = randomPlaylist;
 		} else {
-			var index = indexPos($scope.songs.last(), $scope.OGsongs);
+			var index = indexPos($scope.songs[0], $scope.OGsongs);
 			var tempArray = $scope.OGsongs.slice();
-			$scope.songs = tempArray.splice(index + 1, tempArray.length - 1).concat(tempArray.splice(0, index + 1));
+			$scope.songs = tempArray.splice(index, tempArray.length).concat(tempArray.splice(0, index));
 		}
 	}
 	
@@ -147,9 +147,9 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		/*$scope.currSong.title = $scope.songs[LinearPos].title;
 		$scope.currSong.artist = $scope.songs[LinearPos].artist;
 		$scope.currSong.submitted_by = $scope.songs[LinearPos].submitted_by;*/
-		$scope.currSong = $scope.songs.last();
+		$scope.currSong = $scope.songs[0];
 		document.title = $scope.currSong.title + ' - PlayYou';
-		var playSongLoc = $scope.songs.last().loc;
+		var playSongLoc = $scope.currSong.loc;
 		audio.src = baseUrl + encodeURIComponent(playSongLoc);
 		audio.load();
 		/*$http.get('/api/playyou/playSong?loc=' + encodeURIComponent(playSongLoc))
@@ -173,35 +173,58 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		$scope.$apply();
 	}
 	
+	$scope.skipNext = function(startPlaying){
+		var tempSong = 1;
+		while(!$scope.songs[tempSong].loc || !$scope.checkVotes($scope.songs[tempSong]) || !$scope.songs[tempSong].status){
+			tempSong++;
+		}
+		var tempArray = $scope.songs.slice();
+		$scope.songs = tempArray.splice(tempSong, tempArray.length).concat(tempArray.splice(0, tempSong));
+		$scope.nextSong();
+		if(startPlaying !== false) {
+			audio.play();
+			$scope.playing = true;
+		}
+	}
+	
 	$scope.skipPrev = function(){
-		//console.log(audio.currentTime/audio.duration);
 		if(audio.currentTime > 5) {
-			//audio.pause();
 			audio.currentTime = 0;
-			//audio.play();
 		} else {
-			var tempSong = 0;
+			var tempSong = $scope.songs.length - 1;
 			while(!$scope.songs[tempSong].loc || !$scope.checkVotes($scope.songs[tempSong]) || !$scope.songs[tempSong].status){
-				tempSong++;
+				tempSong--;
 			}
 			var tempArray = $scope.songs.slice();
-			$scope.songs = tempArray.splice(tempSong+1, tempArray.length - 1).concat(tempArray.splice(0, tempSong+1));
+			$scope.songs = tempArray.splice(tempSong, tempArray.length - 1).concat(tempArray.splice(0, tempSong + 1));
+			console.log($scope.songs.length);
 			$scope.nextSong();
 			audio.play();
 			$scope.playing = true;
 		}
 	}
 	
-	$scope.skipNext = function(){
-		var tempSong = $scope.songs.length - 2;
-		while(!$scope.songs[tempSong].loc || !$scope.checkVotes($scope.songs[tempSong]) || !$scope.songs[tempSong].status){
-			tempSong--;
+	$scope.searchPlayThis = function(song) {
+		$('#searchDiv').blur();
+		$scope.interacting = $scope.searching = false;
+		$scope.playThis(song);
+	}
+	
+	$scope.playThis = function(song){
+		if($scope.selecting) return;
+		if(song.link === $scope.currSong.link) $scope.changePlayState();
+		else {
+			var tempSong = 0;
+			while($scope.songs[tempSong].link !== song.link){
+				tempSong++;
+			}
+			var tempArray = $scope.songs.slice();
+			$scope.songs = tempArray.splice(tempSong, tempArray.length).concat(tempArray.splice(0, tempSong));
+			$('html,body').animate({scrollTop: 0}, 1000);
+			$scope.nextSong();
+			audio.play();
+			$scope.playing = true;
 		}
-		var tempArray = $scope.songs.slice();
-		$scope.songs = tempArray.splice(tempSong + 1, tempArray.length - 1).concat(tempArray.splice(0, tempSong + 1));
-		$scope.nextSong();
-		audio.play();
-		$scope.playing = true;
 	}
 	
 	window.onkeydown = function (KeyEvent) {
@@ -275,29 +298,6 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		audio.volume = v/100;
 	}
 	
-	$scope.searchPlayThis = function(song) {
-		$('#searchDiv').blur();
-		$scope.interacting = $scope.searching = false;
-		$scope.playThis(song);
-	}
-	
-	$scope.playThis = function(song){
-		if($scope.selecting) return;
-		if(song.link === $scope.currSong.link) $scope.changePlayState();
-		else {
-			var tempSong = $scope.songs.length - 1;
-			while($scope.songs[tempSong].link !== song.link){
-				tempSong--;
-			}
-			var tempArray = $scope.songs.slice();
-			$scope.songs = tempArray.splice(tempSong+1, tempArray.length - 1).concat(tempArray.splice(0, tempSong+1));
-			$('html,body').animate({scrollTop: 0}, 1000);
-			$scope.nextSong();
-			audio.play();
-			$scope.playing = true;
-		}
-	}
-	
 	if(MeanUser && MeanUser.user && MeanUser.user.name){
 		$scope.loggedIn = true;
 	}
@@ -362,13 +362,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		.success(function(data){
 			console.dir(data.songs);
 			$scope.songs = $scope.OGsongs = data.songs;
-			var tempSong = $scope.songs.length - 1;
-			while(!$scope.songs[tempSong].loc || !$scope.checkVotes($scope.songs[tempSong]) || !$scope.songs[tempSong].status){
-				tempSong--;
-			}
-			var tempArray = $scope.songs.slice();
-			$scope.songs = tempArray.splice(tempSong + 1, tempArray.length - 1).concat(tempArray.splice(0, tempSong + 1));
-			$scope.nextSong();
+			$scope.skipNext(false);
 			//$scope.changePlayState();
 		})
 		.error(function(data, status){

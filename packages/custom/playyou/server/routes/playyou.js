@@ -193,7 +193,7 @@ module.exports = function(Playyou, app, auth, database) {
 			}
 			
 			return res.send({songs: songs});
-		}).sort({_id:1});
+		}).sort({_id:-1});
 	});
 	
 	app.post('/api/playyou/getSongsAfter', function(req, res){
