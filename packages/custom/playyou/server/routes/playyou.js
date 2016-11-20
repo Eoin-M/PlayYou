@@ -190,6 +190,7 @@ module.exports = function(Playyou, app, auth, database) {
 				songs[i].upvotes = songs[i].votes.up.length;
 				songs[i].downvotes = songs[i].votes.down.length;
 				songs[i].absvotes = songs[i].votes.abs.length;
+				songs[i].votes = undefined;
 			}
 			
 			return res.send({songs: songs});
