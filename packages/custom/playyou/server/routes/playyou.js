@@ -18,7 +18,15 @@ module.exports = function(Playyou, app, auth, database, https) {
 	});
 	io.listen(https);
 	
-	
+	function emitVoteChange(song) {
+		var emitSong = {
+			link: song.link,
+			upvotes: song.votes.up.length,
+			absvotes: song.votes.abs.length,
+			downvotes: song.votes.down.length,
+		}
+		console.log(emitSong);
+	}
 	/*var House = mongoose.model('Song');
 	
 	function moveSongs(){
@@ -259,34 +267,29 @@ module.exports = function(Playyou, app, auth, database, https) {
 			
 			if(!song) return res.sendStatus(510);
 			
+			song.votes.up = song.votes.up.filter(function(element){
+				return element !== req.user._id;
+			});
+			song.votes.abs = song.votes.abs.filter(function(element){
+				return element !== req.user._id;
+			});
+			song.votes.down = song.votes.down.filter(function(element){
+				return element !== req.user._id;
+			});
+			
 			if(req.body.newVote !== undefined){
 				if(req.body.newVote === 1){
 					song.votes.up.push(req.user._id);
 				}
-				else if(req.body.newVote === -1){
-					song.votes.down.push(req.user._id);
-				}
 				else if(req.body.newVote === 0) {
 					song.votes.abs.push(req.user._id);
 				}
+				else if(req.body.newVote === -1){
+					song.votes.down.push(req.user._id);
+				}
 			}
 			
-			if(req.body.oldVote != undefined) {
-				var remove;
-				if(req.body.oldVote === 1){
-					remove = song.votes.up.indexOf(req.user._id);
-					if(remove > -1) song.votes.up.splice(remove, 1);
-				}
-				else if(req.body.oldVote === -1){
-					remove = song.votes.down.indexOf(req.user._id);
-					if(remove > -1) song.votes.down.splice(remove, 1);
-				}
-				else if(req.body.oldVote === 0) {
-					remove = song.votes.abs.indexOf(req.user._id);
-					if(remove > -1) song.votes.abs.splice(remove, 1);
-				}
-				if(remove === -1) console.log('User ID not found in any vote array');
-			}
+			emitVoteChange(song);
 			
 			if(song.votes.up.length >= 3 && checkVotes(song)){
 				song.status = true;
