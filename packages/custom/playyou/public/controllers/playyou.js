@@ -651,6 +651,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		if(!$scope.songs || $scope.songs.length < 100 || !$scope.OGsongs || $scope.OGsongs.length < 100) return;
 		if(!data.song.absvotes) data.song.absvotes = 0;
 		if(!data.song.downvotes) data.song.downvotes = 0;
+		if($scope.loggedIn && data.song.submitted_by === MeanUser.user.name) data.song.vote = 1;
 		$scope.OGsongs.unshift(data.song);
 		$scope.songs.unshift(data.song);
 	});
