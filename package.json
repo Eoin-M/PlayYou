@@ -58,7 +58,8 @@
     "meanio-circles": "~0.1.5",
     "meanio-admin": "~0.1.7",
     "youtube-mp3-downloader": "~0.4.4",
-    "youtube-dl": "~1.11.1"
+    "youtube-dl": "~1.11.1",
+    "socket.io": "~1.6.0"
   },
   "devDependencies": {
     "del": "latest",

@@ -11,10 +11,10 @@ var Playyou = new Module('playyou');
  * All MEAN packages require registration
  * Dependency injection is used to define required modules
  */
-Playyou.register(function(app, auth, database) {
+Playyou.register(function(app, auth, database, https) {
 
   //We enable routing. By default the Package Object is passed to the routes
-  Playyou.routes(app, auth, database);
+  Playyou.routes(app, auth, database, https);
   
   /*Playyou.menus.add({
     title: 'playyou example page',
@@ -29,6 +29,7 @@ Playyou.register(function(app, auth, database) {
   Playyou.aggregateAsset('js', 'socket.io-stream.js');
   Playyou.aggregateAsset('js', 'socket.io.js');
   Playyou.aggregateAsset('js', 'jquery.jplayer.min.js');*/
+  Playyou.aggregateAsset('js', 'socket.io.js');
   
   Playyou.angularDependencies(['infinite-scroll']);
 

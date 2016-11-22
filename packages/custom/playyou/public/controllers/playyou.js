@@ -12,8 +12,8 @@ Array.prototype.last = function() {
 //notThere();
 
 /* jshint -W098 */
-angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$rootScope', 'Global', '$http', 'MeanUser', '$sce', 'Playyou',
-  function($scope, $rootScope, Global, $http, MeanUser, $sce, Playyou) {
+angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$rootScope', 'Global', '$http', 'MeanUser', '$sce', 'Playyou', 'socket',
+  function($scope, $rootScope, Global, $http, MeanUser, $sce, Playyou, socket) {
     $scope.global = Global;
     $scope.package = {
       name: 'playyou'
@@ -646,6 +646,40 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		$scope.$apply();
 	});
 	
+	socket.on('newSong', function (data) {
+		console.dir(data.song);
+		if(!$scope.songs || $scope.songs.length < 100 || !$scope.OGsongs || $scope.OGsongs.length < 100) return;
+		if(!data.song.absvotes) data.song.absvotes = 0;
+		if(!data.song.downvotes) data.song.downvotes = 0;
+		$scope.OGsongs.unshift(data.song);
+		$scope.songs.unshift(data.song);
+	});
+	
 	$scope.getSongs();
   }
-]);
+]).factory('socket', function($rootScope){
+    //Creating connection with server
+    var socket = io();
+
+    return {
+		on: function (eventName, callback) {
+		  socket.on(eventName, function () {  
+			var args = arguments;
+			$rootScope.$apply(function () {
+			  callback.apply(socket, args);
+			});
+		  });
+		},
+		emit: function (eventName, data, callback) {
+		  socket.emit(eventName, data, function () {
+			var args = arguments;
+			$rootScope.$apply(function () {
+			  if (callback) {
+				callback.apply(socket, args);
+			  }
+			});
+		  })
+		}
+	};
+});
+

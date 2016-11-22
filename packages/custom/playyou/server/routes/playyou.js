@@ -2,11 +2,23 @@
 
 /* jshint -W098 */
 // The Package is past automatically as first parameter
-module.exports = function(Playyou, app, auth, database) {
+module.exports = function(Playyou, app, auth, database, https) {
 	var mongoose = require('mongoose');
 	var Song = mongoose.model('House'); //'Song' model for Hub peeps
 	var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 	var ObjectId = require('mongodb').ObjectID;
+	
+	var io = require('socket.io')();
+	io.on('connection', function(socket){
+		console.log('User Connected');
+		
+		socket.on('disconnect', function(){
+			console.log('User Disconnected');
+		});
+	});
+	io.listen(https);
+	
+	
 	/*var House = mongoose.model('Song');
 	
 	function moveSongs(){
@@ -245,6 +257,8 @@ module.exports = function(Playyou, app, auth, database) {
 				return res.sendStatus(510);
 			}
 			
+			if(!song) return res.sendStatus(510);
+			
 			if(req.body.newVote !== undefined){
 				if(req.body.newVote === 1){
 					song.votes.up.push(req.user._id);
@@ -315,6 +329,7 @@ module.exports = function(Playyou, app, auth, database) {
 			}
 			else return res.send({song: song});
 		});
+		io.emit('newSong', { song: song});
 	});
 	
 	function downloadSong(song){
