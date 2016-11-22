@@ -21,11 +21,12 @@ module.exports = function(Playyou, app, auth, database, https) {
 	function emitVoteChange(song) {
 		var emitSong = {
 			link: song.link,
-			upvotes: song.votes.up.length,
-			absvotes: song.votes.abs.length,
-			downvotes: song.votes.down.length,
+			up: song.votes.up,
+			abs: song.votes.abs,
+			down: song.votes.down,
 		}
-		console.log(emitSong);
+		//console.log(emitSong);
+		io.emit('voteChange', { song: emitSong});
 	}
 	/*var House = mongoose.model('Song');
 	

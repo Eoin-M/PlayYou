@@ -647,7 +647,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	});
 	
 	socket.on('newSong', function (data) {
-		console.dir(data.song);
+		//console.dir(data.song);
 		if(!$scope.songs || $scope.songs.length < 100 || !$scope.OGsongs || $scope.OGsongs.length < 100) return;
 		if(!data.song.absvotes) data.song.absvotes = 0;
 		if(!data.song.downvotes) data.song.downvotes = 0;
@@ -655,6 +655,32 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		$scope.OGsongs.unshift(data.song);
 		$scope.songs.unshift(data.song);
 	});
+	
+	socket.on('voteChange', function (data) {
+		for(var i = 0; i < $scope.songs.length; i++) {
+			if(voteChange($scope.songs[i], data.song)) break;
+		}
+		
+		for(var i = 0; i < $scope.OGsongs.length; i++) {
+			if(voteChange($scope.OGsongs[i], data.song)) break;
+		}
+	});
+	
+	function voteChange(song, emitSong) {
+		if(song.link === emitSong.link) {
+			song.upvotes = emitSong.up.length;
+			song.absvotes = emitSong.abs.length;
+			song.downvotes = emitSong.down.length;
+			if($scope.loggedIn){
+				if(emitSong.up.indexOf(MeanUser.user._id) >= 0) song.vote = 1;
+				else if(emitSong.abs.indexOf(MeanUser.user._id) >= 0) song.vote = 0;
+				else if(emitSong.down.indexOf(MeanUser.user._id) >= 0) song.vote = -1;
+				else song.vote = null;
+			}
+			return true;
+		}
+		return false;
+	}
 	
 	$scope.getSongs();
   }
