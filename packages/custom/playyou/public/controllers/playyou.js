@@ -602,12 +602,12 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		$http.post('/api/playyou/addSong', {song: song})
 		.success(function(data){
 			console.log('Success');
-			song.submitted_by = MeanUser.user.name;
+			/*song.submitted_by = MeanUser.user.name;
 			song.upvotes = 1;
 			song.absvotes = 0;
 			song.downvotes = 0;
 			song.vote = 1;
-			$scope.songs[$scope.songs.length] = (song);
+			$scope.songs[$scope.songs.length] = (song);*/
 		})
 		.error(function(data, status){
 			alert('Error: ' + status);
