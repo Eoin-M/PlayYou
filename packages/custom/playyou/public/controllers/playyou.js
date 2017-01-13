@@ -4,6 +4,19 @@ Array.prototype.last = function() {
     return this[this.length-1];
 }
 
+Array.prototype.rotate = (function() {
+    var unshift = Array.prototype.unshift,
+        splice = Array.prototype.splice;
+
+    return function(count) {
+        var len = this.length >>> 0,
+            count = count >> 0;
+
+        unshift.apply(this, splice.call(this, count % len, len));
+        return this;
+    };
+})();
+
 //window.onerror = function(message, source, lineno, colno) {alert('Hi');}
 /*window.addEventListener('error', function(error) {
 	alert('Error');
@@ -179,7 +192,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 			tempSong++;
 		}
 		var tempArray = $scope.songs.slice();
-		$scope.songs = tempArray.splice(tempSong, tempArray.length).concat(tempArray.splice(0, tempSong));
+		$scope.songs = tempArray.rotate(tempSong);
 		$scope.nextSong();
 		if(startPlaying !== false) {
 			audio.play();
@@ -196,7 +209,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 				tempSong--;
 			}
 			var tempArray = $scope.songs.slice();
-			$scope.songs = tempArray.splice(tempSong, tempArray.length - 1).concat(tempArray.splice(0, tempSong + 1));
+			$scope.songs = tempArray.rotate(tempSong);
 			console.log($scope.songs.length);
 			$scope.nextSong();
 			audio.play();
