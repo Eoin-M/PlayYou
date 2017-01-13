@@ -388,14 +388,14 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		return str.substring(0, cutOffPoint) + '<span class="searchBoldColor">' + str.substring(cutOffPoint, cutOffPoint + $scope.searchParam.length) + '</span>' + str.substring(cutOffPoint + $scope.searchParam.length);
 	}
 	
-	$scope.neccesaryVotes = 0.6;
+	$scope.necessaryVotes = 0.6;
 	
 	$scope.checkVotes = function(song){
 		if(song.upvotes < 3) return false;
 		var ups = song.upvotes + song.absvotes / 3;
 		var total = ups + song.downvotes;
 		
-		return (ups/total > $scope.neccesaryVotes);
+		return (ups/total > $scope.necessaryVotes);
 	}
 	
 	$scope.songVote = function(song, v){
