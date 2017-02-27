@@ -279,6 +279,10 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 		else if(KeyEvent.which === 66){
 			$scope.skipPrev();
 		}
+		else if(KeyEvent.which === 82){
+			$scope.random()
+			$scope.$apply()
+		}
 	}
 	
 	function volumePopIn() {		
