@@ -561,13 +561,12 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 	
 	$scope.checkLink = function(link){
 		console.log(link);
-		if(link === undefined || link === '') { $scope.correctLink = 'Please Enter a Correct Link'; $scope.$apply(); return; }
-		var correctLength = link.split('&');
-		if(correctLength.length > 1) link = correctLength[0];
-		var vID = link.split('v=');
-		if(vID[1] === null || vID[1] === undefined) { $scope.correctLink = 'Youtube VideoID Not Present'; return; }
-		vID = vID[1].split('&');
-		vID = vID[0];
+		if(emptyString(link)) { $scope.correctLink = 'Please Enter a Correct Link'; $scope.$apply(); return; }
+		if(link.length == 11) link = 'https://www.youtube.com/watch?v=' + link; //just the 11 char video id
+		var ytReg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i;
+		var vID = link.match(ytReg) || ['', '']; //second string will always be video id, or it could return null
+		vID = vID[1];
+		if(emptyString(vID)) { $scope.correctLink = 'Youtube VideoID Not Present'; return; }
 		$scope.newSong.link = link;
 		if(PlaylistLink(link)) { return; }
 		else {
@@ -590,6 +589,7 @@ angular.module('mean.playyou').controller('PlayyouController', ['$scope', '$root
 						}
 						if(emptyString($scope.newSong.artist) && guess[0]) $scope.newSong.artist = guess[0];
 					//}
+					$scope.newSong.link = 'https://www.youtube.com/watch?v=' + vID;
 					$scope.correctLink = null;
 					$scope.$apply();
 				}
