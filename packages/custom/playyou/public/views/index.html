@@ -102,7 +102,7 @@
 			<form class="form-horizontal">
 				<input id="songTitle" type="text" class="form-control" ng-class="{inputRed:(!newSong.title || correctTitle)}" ng-change="checkTitle(newSong.title)" placeholder="Song Title" ng-model="newSong.title"/><br>
 				<input id="songArtist" type="text" class="form-control" ng-class="{inputRed:!newSong.artist}" placeholder="Song Artist" ng-model="newSong.artist" /><br>
-				<input id="songLink" type="text" class="form-control" ng-class="{inputRed:correctLink}" placeholder="YouTube Link" ng-model="newSong.link" ng-change="checkLink(newSong.link)"/><br>
+				<input id="songLink" type="text" class="form-control" ng-class="{inputRed:correctLink}" placeholder="Any YouTube Link will Work (probably)" ng-model="newSong.link" ng-change="checkLink(newSong.link)"/><br>
 				<div style="float:left; color:red">{{correctLink}}<br>{{correctTitle}}</div>
 				<button class="btn btn-primary" data-dismiss="modal" ng-click="addSong(newSong)" ng-disabled="!newSong.title || !newSong.artist || correctLink || correctTitle">Submit</button>
 			</form>
