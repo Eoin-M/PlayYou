@@ -134,7 +134,7 @@ a:-webkit-any-link {
 #volume {
 	height: 80px;
     margin-top: -40px;
-	left: 5%;
+	left: 4%;
 }
 
 #volume .slider-track-high {
@@ -243,7 +243,7 @@ div:focus {
     }
 
     .btn-sm {
-        width: calc(25% - 2px);
+        width: calc(25% - 3px);
     }
 }
 
