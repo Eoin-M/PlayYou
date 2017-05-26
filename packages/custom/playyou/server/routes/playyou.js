@@ -90,6 +90,7 @@ module.exports = function(Playyou, app, auth, database, https) {
 	
 	app.get('/api/playyou/playSong', function(req, res){
 		//console.log(req.headers);
+		if(!req.user) return res.sendStatus(412);
 		var rangeHeader = req.get('Range');
 		//console.log(rangeHeader);
 		/*if(rangeHeader !== null)
